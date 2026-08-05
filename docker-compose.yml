@@ -1,0 +1,23 @@
+services:
+
+  # ── PHP / Apache application ──────────────────────────────────────────────
+  app:
+    image: ${APP_IMAGE}
+    container_name: garage_app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      DB_DRIVER: pgsql
+      DB_HOST: db
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:-garage_lingiah}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      APP_DEBUG: ${APP_DEBUG:-false}
+    networks:
+      - garage_net
+
+networks:
+  garage_net:
+    driver: bridge
