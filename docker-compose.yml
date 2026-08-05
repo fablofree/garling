@@ -3,17 +3,17 @@ services:
   # ── PHP / Apache application ──────────────────────────────────────────────
   app:
     image: ${APP_IMAGE}
-    container_name: garage_app
+    container_name: fablofree/garage-lingiah
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "${APP_PORT:-8081}:80"
     environment:
       DB_DRIVER: pgsql
       DB_HOST: db
-      DB_PORT: ${DB_PORT:-5432}
+      DB_PORT: ${DB_PORT:-5433}
       DB_DATABASE: ${DB_DATABASE:-garage_lingiah}
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_USERNAME: ${DB_USERNAME:-fab}
+      DB_PASSWORD: ${DB_PASSWORD:-4h4jirgu9d2dF}
       APP_DEBUG: ${APP_DEBUG:-false}
     networks:
       - garage_net
