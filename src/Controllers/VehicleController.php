@@ -10,17 +10,20 @@ use App\Core\Session;
 use App\Repositories\VehicleRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\ServiceEntryRepository;
+use App\Repositories\VehicleAttributeRepository;
 
 class VehicleController extends Controller
 {
     private VehicleRepository $vehicleRepo;
     private CustomerRepository $customerRepo;
+    private VehicleAttributeRepository $attrRepo;
 
     public function __construct(Request $request, Response $response)
     {
         parent::__construct($request, $response);
         $this->vehicleRepo  = new VehicleRepository();
         $this->customerRepo = new CustomerRepository();
+        $this->attrRepo     = new VehicleAttributeRepository();
     }
 
     public function index(Request $request, Response $response): void
@@ -48,12 +51,16 @@ class VehicleController extends Controller
         $customers  = $this->customerRepo->findAll();
 
         $this->render('vehicles.form', [
-            'title'         => 'New Vehicle',
-            'activeMenu'    => 'vehicles',
-            'vehicle'       => null,
-            'customers'     => $customers,
-            'action'        => '/vehicles/store',
-            'submitLabel'   => 'Register Vehicle',
+            'title'            => 'New Vehicle',
+            'activeMenu'       => 'vehicles',
+            'vehicle'          => null,
+            'customers'        => $customers,
+            'makes'            => $this->attrRepo->getMakes(),
+            'models'           => $this->attrRepo->getModels(),
+            'types'            => $this->attrRepo->getTypes(),
+            'colours'          => $this->attrRepo->getColours(),
+            'action'           => '/vehicles/store',
+            'submitLabel'      => 'Register Vehicle',
             'selectedCustomer' => $customerId,
         ]);
     }
@@ -114,12 +121,16 @@ class VehicleController extends Controller
         $customers = $this->customerRepo->findAll();
 
         $this->render('vehicles.form', [
-            'title'      => 'Edit Vehicle',
-            'activeMenu' => 'vehicles',
-            'vehicle'    => $vehicle,
-            'customers'  => $customers,
-            'action'     => '/vehicles/' . $id . '/update',
-            'submitLabel'=> 'Update Vehicle',
+            'title'            => 'Edit Vehicle',
+            'activeMenu'       => 'vehicles',
+            'vehicle'          => $vehicle,
+            'customers'        => $customers,
+            'makes'            => $this->attrRepo->getMakes(),
+            'models'           => $this->attrRepo->getModels(),
+            'types'            => $this->attrRepo->getTypes(),
+            'colours'          => $this->attrRepo->getColours(),
+            'action'           => '/vehicles/' . $id . '/update',
+            'submitLabel'      => 'Update Vehicle',
             'selectedCustomer' => $vehicle['customer_id'],
         ]);
     }

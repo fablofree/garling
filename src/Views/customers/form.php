@@ -28,6 +28,11 @@
 
         <div class="form-grid-3">
             <div class="form-group">
+                <label class="form-label">Mobile</label>
+                <input type="tel" name="tel_mobile" class="form-control"
+                       value="<?= htmlspecialchars($c['tel_mobile'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="form-group">
                 <label class="form-label">Tel. Home</label>
                 <input type="tel" name="tel_home" class="form-control"
                        value="<?= htmlspecialchars($c['tel_home'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
@@ -36,11 +41,6 @@
                 <label class="form-label">Tel. Office</label>
                 <input type="tel" name="tel_office" class="form-control"
                        value="<?= htmlspecialchars($c['tel_office'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Mobile</label>
-                <input type="tel" name="tel_mobile" class="form-control"
-                       value="<?= htmlspecialchars($c['tel_mobile'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
         </div>
 

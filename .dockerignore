@@ -12,8 +12,7 @@ images/
 *.md
 INSTALL.md
 
-# One-time setup script (should not ship in production image)
-#setup.php
+docker-compose.yml
 
 # Local env overrides
 .env
