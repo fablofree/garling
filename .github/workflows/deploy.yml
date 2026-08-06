@@ -31,4 +31,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/garage-lingiah:1.0
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/garage-lingiah:1.1
