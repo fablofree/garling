@@ -1,10 +1,10 @@
 #!/bin/sh
 # ──────────────────────────────────────────────────────────────────────────────
 # Container entrypoint
-# 1. Waits until PostgreSQL is reachable (belt-and-suspenders on top of
-#    depends_on healthcheck, which may not be used in all environments).
-# 2. Runs setup.php (idempotent: IF NOT EXISTS + ON CONFLICT DO NOTHING).
-# 3. Hands off to the default Apache foreground process.
+# 1. Waits until PostgreSQL is reachable.
+# 2. Runs docker/migrate.php — tracks migrations & seeds in the DB so this is
+#    fully idempotent on every container restart.
+# 3. Hands off to Apache.
 # ──────────────────────────────────────────────────────────────────────────────
 set -e
 
@@ -26,9 +26,9 @@ until php -r "
 done
 
 echo "[entrypoint] PostgreSQL is ready."
+echo "[entrypoint] Running migrations & seeds ..."
 
-echo "[entrypoint] Running database setup (migrations + admin seed) ..."
-php /var/www/html/setup.php
+php /var/www/html/docker/migrate.php
 
 echo "[entrypoint] Starting Apache ..."
 exec apache2-foreground

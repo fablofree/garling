@@ -16,6 +16,8 @@ $flashWarning = $_flash_warning ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> — <?= $appName ?></title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/logo.svg">
+    <meta name="csrf-token" content="<?= htmlspecialchars($_csrf_token ?? '', ENT_QUOTES, 'UTF-8') ?>">
     <link rel="stylesheet" href="/assets/css/app.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

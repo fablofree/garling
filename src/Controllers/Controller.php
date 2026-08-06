@@ -44,6 +44,21 @@ abstract class Controller
         $data['_flash_warning'] = Session::getFlash('warning');
         $data['_csrf_token']    = Session::getCsrfToken();
 
+        // Load app settings from DB (wraps in try/catch so missing table doesn't break app)
+        try {
+            $settingsRepo = new \App\Repositories\SettingsRepository();
+            $dbSettings   = $settingsRepo->getAll();
+            $data['_app']['name']               = $dbSettings['app_name']        ?? $data['_app']['name'];
+            $data['_app']['logo_url']           = !empty($dbSettings['app_logo'])
+                ? '/' . ltrim($dbSettings['app_logo'], '/')
+                : '/assets/images/logo.svg';
+            $data['_app']['currency']['symbol'] = $dbSettings['currency_symbol'] ?? $data['_app']['currency']['symbol'];
+            $data['_app']['vat_default']        = $dbSettings['vat_default']     ?? '0';
+        } catch (\Throwable $e) {
+            $data['_app']['logo_url']    = '/assets/images/logo.svg';
+            $data['_app']['vat_default'] = '0';
+        }
+
         $viewPath = ROOT_PATH . '/src/Views/' . str_replace('.', '/', $view) . '.php';
         if (!file_exists($viewPath)) {
             throw new \RuntimeException("View not found: {$viewPath}");

@@ -120,14 +120,3 @@ garling/
 **Blank page / PHP errors:**
 - Set `APP_DEBUG=true` in your environment
 - Check PHP error log
-
-
-Add a logo in PNG and add it to favicon, in the dashboard allow the admin to manage logo and other application settings 
-When the user exit the input typing of Odometer Reading for add or edit Service Entry automatically calculate Next Servicing At by using the value Servicing Frequency entered in vehicule
-Make all integer fields integer because now when we click on upper arrow we have 0.01 by example instead of 1
-Add Batteries Types etc management and allow the admin to manage
-Allow the connected user to edit his profile
-Add user management to allow the admin to add another users
-Allow the admin to manage Marke, Model, Vehicule Type and colour. When adding or modifying a Vehicule allow the user to select or search each of these if not exist allow the user
-to create (open a small popup) and automatically select
-In Vehicule on Servicing Frequency just display the select Distance Unit selected

@@ -67,6 +67,18 @@ try {
     echo "Admin user warning: " . $e->getMessage() . "\n";
 }
 
+// Run migration 002 (attributes + settings + catalog tables)
+$migration2 = ROOT_PATH . '/database/migrations/002_attributes_settings.sql';
+if (file_exists($migration2)) {
+    $sql = file_get_contents($migration2);
+    try {
+        $pdo->exec($sql);
+        echo "Migration applied: 002_attributes_settings.sql\n";
+    } catch (PDOException $e) {
+        echo "Migration 002 warning: " . $e->getMessage() . "\n";
+    }
+}
+
 // Run seed (sample expenses / reference data)
 $seed = ROOT_PATH . '/database/seeds/001_seed_data.sql';
 if (file_exists($seed)) {
