@@ -26,27 +26,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # ── 4. Tags & labels ─────────────────────────────────────────────────────
-      # Produces two tags:
-      #   • latest
-      #   • sha-<short-sha>  (e.g. sha-a1b2c3d)
-      - name: Extract image metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKER_USERNAME }}/garage-lingiah:1.0
-          tags: |
-            type=raw,value=latest
-            type=sha,prefix=sha-,format=short
-
-      # ── 5. Build & push ──────────────────────────────────────────────────────
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags:       ${{ steps.meta.outputs.tags }}
-          labels:     ${{ steps.meta.outputs.labels }}
-          # Layer cache stored in GitHub Actions cache (free, fast)
-          cache-from: type=gha
-          cache-to:   type=gha,mode=max
+          tags: docker.io/${{ secrets.DOCKER_USERNAME }}/garage-lingiah:1.0
