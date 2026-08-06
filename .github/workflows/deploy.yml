@@ -34,7 +34,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/garage-lingiah
+          images: ${{ secrets.DOCKER_USERNAME }}/garage-lingiah:1.0
           tags: |
             type=raw,value=latest
             type=sha,prefix=sha-,format=short
