@@ -13,7 +13,7 @@ images/
 INSTALL.md
 
 # One-time setup script (should not ship in production image)
-setup.php
+#setup.php
 
 # Local env overrides
 .env
