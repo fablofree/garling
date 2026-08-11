@@ -120,3 +120,29 @@ garling/
 **Blank page / PHP errors:**
 - Set `APP_DEBUG=true` in your environment
 - Check PHP error log
+
+
+
+In Service Entry, remove Qty, Unit price and only add Amount
+When clicking in Amount add next row
+
+Remove: Monthly Revenue, Today's Revenue, Weekly Revenue in dashboard	
+
+Add BRN, VAT Reg, Address, Tel, email in application settings
+
+Payment Date must not be after today date
+
+For all date input use format dd/mm/YYYY
+
+Add in customer form and invoice: BRN(Business Registration Number), VAT
+In Invoice add: VAT INVOICE in middle, No: 000001, Signature in bottom left, Customer signature in bottom right, also display the logo manage by the admin,
+in invoice only display Description and amount, display spare parts in a column and Repairs / Labour in other column so side bar side
+Only add Next Service when it's an invoice
+In Quotation add Remarks value down, separate quotation from Invoice manage them in different tables and only generate an invoice when the admin click on print
+
+
+Add invoices in Management display in the list (id, date, Customer name, Vehicule registration) also add research by (id, customer name or vehicule registration)
+
+In service entry put Type below Discount (Rs), only generate an invoice when the user click on print
+
+Now I want to use Mysql as database configure accordingly, remove everything concerning docker and setup I will just execute the sql scripts manually
