@@ -1,3 +1,8 @@
+<?php
+$cfg        = $_app ?? [];
+$appName   = htmlspecialchars($cfg['name'] ?? 'Garage A. Lingiah', ENT_QUOTES, 'UTF-8');
+$logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', ENT_QUOTES, 'UTF-8');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Garage A. Lingiah</title>
     <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="icon" type="image/svg+xml" href="<?= $logoUrl ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Inter', sans-serif; }
@@ -54,13 +60,8 @@
     <div class="login-bg"></div>
     <div class="login-wrapper">
         <div class="login-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5">
-                <rect x="1" y="3" width="15" height="13" rx="2"/>
-                <path d="M16 8h4l3 6v3h-7V8z"/>
-                <circle cx="5.5" cy="18.5" r="2.5"/>
-                <circle cx="18.5" cy="18.5" r="2.5"/>
-            </svg>
-            <h1>Garage A. Lingiah</h1>
+            <img src="<?= $logoUrl ?>" alt="Logo" style="width:56px;height:56px">
+            <h1><?= $appName ?></h1>
             <p>Garage Management System</p>
         </div>
 

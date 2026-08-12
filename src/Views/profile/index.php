@@ -15,8 +15,7 @@
 
         <div class="form-group" style="padding:20px 20px 0">
             <label class="form-label">Username</label>
-            <input type="text" class="form-control" value="<?= htmlspecialchars($u['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                   readonly style="background:var(--bg)">
+            <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($u['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         </div>
 
         <div class="form-group" style="padding:0 20px">

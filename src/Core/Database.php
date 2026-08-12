@@ -51,6 +51,7 @@ class Database
 
     public function query(string $sql, array $params = []): \PDOStatement
     {
+        // die(var_dump($sql, $params));
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;

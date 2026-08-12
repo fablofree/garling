@@ -20,8 +20,7 @@ RewriteRule ^ index.php [QSA,L]
 
 # Deny access to hidden files
 <FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>
 
 # PHP settings

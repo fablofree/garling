@@ -9,6 +9,9 @@ $userName  = htmlspecialchars($_user['name'] ?? '', ENT_QUOTES, 'UTF-8');
 $flashSuccess = $_flash_success ?? null;
 $flashError   = $_flash_error   ?? null;
 $flashWarning = $_flash_warning ?? null;
+$cfg        = $_app ?? [];
+$logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', ENT_QUOTES, 'UTF-8');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +19,7 @@ $flashWarning = $_flash_warning ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> — <?= $appName ?></title>
-    <link rel="icon" type="image/svg+xml" href="/assets/images/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="<?= $logoUrl ?>">
     <meta name="csrf-token" content="<?= htmlspecialchars($_csrf_token ?? '', ENT_QUOTES, 'UTF-8') ?>">
     <link rel="stylesheet" href="/assets/css/app.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

@@ -63,7 +63,6 @@ $fmt = fn(float $v) => $cur . ' ' . number_format($v, 2);
                     <td>
                         <div class="action-group">
                             <a href="/services/<?= (int)$e['id'] ?>" class="btn btn-xs btn-outline">View</a>
-                            <a href="/services/<?= (int)$e['id'] ?>/invoice" class="btn btn-xs btn-outline" target="_blank">Invoice</a>
                             <a href="/services/<?= (int)$e['id'] ?>/edit" class="btn btn-xs btn-outline">Edit</a>
                             <form method="POST" action="/services/<?= (int)$e['id'] ?>/delete" class="inline" onsubmit="return confirm('Delete this entry?')">
                                 <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($_csrf_token ?? '', ENT_QUOTES, 'UTF-8') ?>">

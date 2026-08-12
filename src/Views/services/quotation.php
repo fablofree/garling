@@ -12,6 +12,7 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quotation — <?= htmlspecialchars($company, ENT_QUOTES, 'UTF-8') ?></title>
+    <link rel="icon" type="image/svg+xml" href="<?= $logoUrl ?>">
     <style>
         @media print {
             .no-print { display: none !important; }
@@ -22,7 +23,7 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f0f0; color: #1a1a1a; font-size: 13px; }
         .invoice-wrapper { max-width: 850px; margin: 30px auto; background: #fff; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
 
-        .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 3px solid #7c3aed; }
+        .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; padding-bottom: 20px; border-bottom: 3px solid #7c3aed; }
         .inv-logo-block { display: flex; align-items: center; gap: 14px; }
         .inv-logo-block img { max-height: 60px; max-width: 120px; object-fit: contain; }
         .inv-company-name { font-size: 20px; font-weight: 700; color: #1e293b; }
@@ -32,13 +33,13 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         .inv-meta-right { text-align: right; }
         .inv-meta-right p { color: #555; font-size: 12px; margin-top: 4px; }
 
-        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 8px; }
         .party { padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; }
         .party h3 { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .party p { line-height: 1.8; color: #333; font-size: 13px; }
         .party strong { color: #1a1a1a; font-size: 14px; }
 
-        .vehicle-info { background: #7c3aed; color: #fff; border-radius: 6px; padding: 12px 18px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .vehicle-info { background: #7c3aed; color: #fff; border-radius: 6px; padding: 12px 18px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .vi-label { font-size: 9px; text-transform: uppercase; color: #ddd6fe; letter-spacing: 0.5px; }
         .vi-value { font-weight: 600; color: #fff; margin-top: 2px; font-size: 13px; }
 
@@ -63,9 +64,9 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         .remarks-section h3 { font-size: 11px; text-transform: uppercase; color: #7c3aed; margin-bottom: 8px; }
         .remarks-section p { color: #555; line-height: 1.6; }
 
-        .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px; padding-top: 0px; border-top: 1px solid #e2e8f0; }
         .sig-block { text-align: center; }
-        .sig-line { border-top: 1px solid #1e293b; margin: 40px 20px 8px; }
+        .sig-line { border-top: 1px solid #1e293b; margin: 25px 20px 8px; }
         .sig-label { font-size: 12px; color: #555; }
 
         .no-print { background: #1e293b; padding: 12px; text-align: center; }
@@ -109,6 +110,7 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
             <p>
                 <strong><?= htmlspecialchars($company, ENT_QUOTES, 'UTF-8') ?></strong><br>
                 <?php if (!empty($cfg['brn'])): ?>BRN: <?= htmlspecialchars($cfg['brn'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
+                <?php if (!empty($cfg['vat_reg'])): ?>VAT Reg: <?= htmlspecialchars($cfg['vat_reg'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
                 <?php if (!empty($cfg['address'])): ?><?= nl2br(htmlspecialchars($cfg['address'], ENT_QUOTES, 'UTF-8')) ?><br><?php endif; ?>
                 <?php if (!empty($cfg['tel'])): ?>Tel: <?= htmlspecialchars($cfg['tel'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
                 <?php if (!empty($cfg['email'])): ?><?= htmlspecialchars($cfg['email'], ENT_QUOTES, 'UTF-8') ?><?php endif; ?>
@@ -118,7 +120,8 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
             <h3>Quoted To</h3>
             <p>
                 <strong><?= htmlspecialchars($e['customer_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong><br>
-                <?php if (!empty($e['customer_brn'])): ?>BRN: <?= htmlspecialchars($e['customer_brn'], ENT_QUOTES, 'UTF-8') ?><?php endif; ?>
+                <?php if (!empty($e['customer_brn'])): ?>BRN: <?= htmlspecialchars($e['customer_brn'], ENT_QUOTES, 'UTF-8') ?><?php endif; ?><br>
+                <?php if (!empty($e['customer_vat_number'])): ?>VAT No: <?= htmlspecialchars($e['customer_vat_number'], ENT_QUOTES, 'UTF-8') ?><?php endif; ?>
             </p>
         </div>
     </div>

@@ -20,9 +20,13 @@ class CustomerRepository extends BaseRepository
         $q = '%' . $query . '%';
         return $this->db->fetchAll(
             "SELECT * FROM customers
-             WHERE name LIKE :q OR email LIKE :q OR tel_mobile LIKE :q OR tel_home LIKE :q
+             WHERE name LIKE :name OR email LIKE :email OR tel_mobile LIKE :tel_mobile
              ORDER BY name ASC",
-            ['q' => $q]
+            [
+                'name'      => $q,
+                'email'     => $q,
+                'tel_mobile' => $q
+            ]
         );
     }
 

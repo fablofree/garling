@@ -7,7 +7,7 @@ $total  = (float)($e['total_cost'] ?? 0);
 $paid   = (float)($e['total_paid'] ?? 0);
 $bal    = $total - $paid;
 $status = $bal <= 0 ? 'paid' : ($paid > 0 ? 'partial' : 'unpaid');
-$invoiceNo = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
+$invoiceNo = 'SERV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
 ?>
 <div class="page-header">
     <h1 class="page-title"><?= htmlspecialchars($invoiceNo, ENT_QUOTES, 'UTF-8') ?></h1>

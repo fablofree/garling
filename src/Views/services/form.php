@@ -207,7 +207,7 @@ $isComp     = isset($e['is_completed']) && $e['is_completed'] == 1;
                         <input type="checkbox" name="is_quotation" value="1"
                                <?= $isQuot ? 'checked' : '' ?>
                                id="isQuotation">
-                        Quotation (not Invoice)
+                        Quotation
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" name="is_completed" value="1"

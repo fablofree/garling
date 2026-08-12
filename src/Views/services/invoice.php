@@ -15,6 +15,7 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice <?= htmlspecialchars($invNo, ENT_QUOTES, 'UTF-8') ?></title>
+    <link rel="icon" type="image/svg+xml" href="<?= $logoUrl ?>">
     <style>
         @media print {
             .no-print { display: none !important; }
@@ -23,10 +24,10 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f0f0; color: #1a1a1a; font-size: 13px; }
-        .invoice-wrapper { max-width: 850px; margin: 30px auto; background: #fff; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+        .invoice-wrapper { max-width: 850px; margin: 30px auto; background: #fff; padding: 15px 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
 
         /* Header */
-        .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 3px solid #1e293b; }
+        .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; padding-bottom: 20px; border-bottom: 3px solid #1e293b; }
         .inv-logo-block { display: flex; align-items: center; gap: 14px; }
         .inv-logo-block img { max-height: 60px; max-width: 120px; object-fit: contain; }
         .inv-company-name { font-size: 20px; font-weight: 700; color: #1e293b; }
@@ -37,14 +38,14 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         .inv-meta-right p { color: #555; font-size: 12px; margin-top: 4px; }
 
         /* Parties */
-        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 8px; }
         .party { padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; }
         .party h3 { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .party p { line-height: 1.8; color: #333; font-size: 13px; }
         .party strong { color: #1a1a1a; font-size: 14px; }
 
         /* Vehicle info bar */
-        .vehicle-info { background: #1e293b; color: #fff; border-radius: 6px; padding: 12px 18px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .vehicle-info { background: #1e293b; color: #fff; border-radius: 6px; padding: 12px 18px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .vi-label { font-size: 9px; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px; }
         .vi-value { font-weight: 600; color: #fff; margin-top: 2px; font-size: 13px; }
 
@@ -83,9 +84,9 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         .next-service strong { color: #1e293b; }
 
         /* Signatures */
-        .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 15px; padding-top: 0px; border-top: 1px solid #e2e8f0; }
         .sig-block { text-align: center; }
-        .sig-line { border-top: 1px solid #1e293b; margin: 40px 20px 8px; }
+        .sig-line { border-top: 1px solid #1e293b; margin: 25px 20px 8px; }
         .sig-label { font-size: 12px; color: #555; }
 
         /* Print button bar */
@@ -160,12 +161,16 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
             <div class="vi-value"><?= htmlspecialchars($e['vehicle_colour'] ?? '—', ENT_QUOTES, 'UTF-8') ?></div>
         </div>
         <div>
+            <div class="vi-label">Chassis No.</div>
+            <div class="vi-value"><?= htmlspecialchars($e['vehicle_chassis_no'] ?? '—', ENT_QUOTES, 'UTF-8') ?></div>
+        </div>
+        <div>
             <div class="vi-label">Odometer</div>
             <div class="vi-value"><?= $e['odometer'] ? number_format((int)$e['odometer']) . ' ' . ($e['distance_unit'] ?? 'km') : '—' ?></div>
         </div>
         <div>
-            <div class="vi-label">Chassis No.</div>
-            <div class="vi-value"><?= htmlspecialchars($e['vehicle_chassis_no'] ?? '—', ENT_QUOTES, 'UTF-8') ?></div>
+            <div class="vi-label">Next Servicing At.</div>
+            <div class="vi-value"><?= $e['odometer'] ? number_format((int)$e['next_servicing']) . ' ' . ($e['distance_unit'] ?? 'km') : '—' ?></div>
         </div>
     </div>
 
@@ -229,7 +234,7 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
 
     <!-- Payment history -->
     <?php if (!empty($payments)): ?>
-    <div class="payments-section">
+    <!-- <div class="payments-section">
         <h3>Payment History</h3>
         <table>
             <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th class="text-right">Amount</th></tr></thead>
@@ -244,20 +249,20 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
             <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
+    </div> -->
     <?php endif; ?>
 
     <!-- Balance box -->
-    <div class="balance-box <?= $balance <= 0 ? 'paid' : '' ?>">
+    <!-- <div class="balance-box <?= $balance <= 0 ? 'paid' : '' ?>">
         <div class="balance-label"><?= $balance <= 0 ? 'PAID IN FULL' : 'OUTSTANDING BALANCE' ?></div>
         <div class="balance-amount"><?= $fmt(abs($balance)) ?></div>
-    </div>
+    </div> -->
 
     <!-- Next service -->
     <?php if (!empty($e['next_servicing'])): ?>
-    <div class="next-service">
+    <!-- <div class="next-service">
         Next Service at: <strong><?= number_format((int)$e['next_servicing']) . ' ' . ($e['distance_unit'] ?? 'km') ?></strong>
-    </div>
+    </div> -->
     <?php endif; ?>
 
     <!-- Remarks -->

@@ -52,11 +52,15 @@ class ProfileController extends Controller
         }
 
         $fullName = trim($request->post('full_name', ''));
+        $username = trim($request->post('username', ''));
         $email    = trim($request->post('email', ''));
 
         $errors = [];
         if (!$fullName) {
             $errors[] = 'Full name is required.';
+        }
+        if (!$username) {
+            $errors[] = 'Username is required.';
         }
 
         // Password change
@@ -81,6 +85,7 @@ class ProfileController extends Controller
 
         $updateData = [
             'full_name' => $fullName,
+            'username'  => $username,
             'email'     => $email,
         ];
 
@@ -92,6 +97,7 @@ class ProfileController extends Controller
 
         // Update session name
         Session::set('user_name', $fullName);
+        Session::set('username', $username);
 
         Session::flash('success', 'Profile updated successfully.');
         $this->redirect('/profile');
