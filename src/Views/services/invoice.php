@@ -141,13 +141,18 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
             <p>
                 <strong><?= htmlspecialchars($e['customer_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong><br>
                 <?php if (!empty($e['customer_brn'])): ?>BRN: <?= htmlspecialchars($e['customer_brn'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
-                <?php if (!empty($e['customer_vat_number'])): ?>VAT No: <?= htmlspecialchars($e['customer_vat_number'], ENT_QUOTES, 'UTF-8') ?><?php endif; ?>
+                <?php if (!empty($e['customer_address'])): ?>Address: <?= htmlspecialchars($e['customer_address'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
+                <?php if (!empty($e['customer_vat_number'])): ?>VAT No: <?= htmlspecialchars($e['customer_vat_number'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
+                <?php if (!empty($e['registration_no'])): ?>Vehicule: <?= htmlspecialchars($e['registration_no'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
+                <?php if (!empty($e['vehicle_make']) || !empty($e['vehicle_make'])): ?>Make: <?= htmlspecialchars(trim(($e['vehicle_make'] ?? '') ), ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
+                <?php if (!empty($e['odometer_reading'])): ?>Odometer: <?= htmlspecialchars($e['odometer_reading'], ENT_QUOTES, 'UTF-8') ?><br><?php endif; ?>
+                <?php if (!empty($e['next_servicing'])): ?>Next Servicing: <?= htmlspecialchars($e['next_servicing'], ENT_QUOTES, 'UTF-8') ?><?php endif; ?>
             </p>
         </div>
     </div>
 
     <!-- Vehicle info bar -->
-    <div class="vehicle-info">
+    <!-- <div class="vehicle-info">
         <div>
             <div class="vi-label">Registration</div>
             <div class="vi-value"><?= htmlspecialchars($e['registration_no'] ?? '—', ENT_QUOTES, 'UTF-8') ?></div>
@@ -172,7 +177,7 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
             <div class="vi-label">Next Servicing At.</div>
             <div class="vi-value"><?= $e['odometer'] ? number_format((int)$e['next_servicing']) . ' ' . ($e['distance_unit'] ?? 'km') : '—' ?></div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Two-column: Spare Parts | Repairs -->
     <div class="line-cols">
