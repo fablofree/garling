@@ -4,7 +4,7 @@ return [
     'name'    => 'Garage A. Lingiah',
     'version' => '1.0.0',
     'debug'   => filter_var(getenv('APP_DEBUG') ?: 'true', FILTER_VALIDATE_BOOLEAN),
-    'url'     => getenv('APP_URL') ?: 'http://localhost/garling/public',
+    'url'     => getenv('APP_URL') ?: 'http://localhost',
     'timezone'=> getenv('APP_TIMEZONE') ?: 'Indian/Mauritius',
 
     'session' => [

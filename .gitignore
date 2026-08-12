@@ -1,8 +1,8 @@
 # Environment — never commit real credentials
 .env
 
-# Docker runtime
-docker-compose.override.yml
+# Uploaded files
+public/uploads/
 
 # Editor
 .vscode/
