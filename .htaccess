@@ -1,8 +1,0 @@
-Options -Indexes
-
-# Forward all requests into public/ — only needed when DocumentRoot is the
-# project root instead of the public/ folder. If you followed the vhost.conf
-# instructions, this file is never reached.
-RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/public/
-RewriteRule ^(.*)$ public/$1 [L]

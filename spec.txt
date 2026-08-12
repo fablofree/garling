@@ -1,0 +1,552 @@
+# Contexte et objectif
+
+Agis comme un **Software Architect / Senior Backend Engineer avec 11+ années d’expérience**, spécialisé dans la conception d’API RESTful, l’architecture logicielle, PHP, MySQL, la sécurité applicative et les principes SOLID.
+
+Je souhaite concevoir et développer un **Backend PHP RESTful API professionnel, maintenable, sécurisé et facilement déployable**, destiné à une application web de **gestion des équipements informatiques d’une ESN**.
+
+L’API devra exposer l’ensemble de ses endpoints sous la racine :
+
+`/api`
+
+Les réponses de l’API devront être exclusivement au format **JSON**, avec une structure cohérente et standardisée pour les réponses de succès, d’erreur et de validation.
+
+# 1. Contraintes techniques et architecture
+
+Le backend devra respecter les exigences suivantes :
+
+* **PHP** orienté objet (POO)
+* Architecture **MVC**
+* Application stricte des principes **SOLID**
+* Architecture modulaire et facilement extensible
+* Séparation claire des responsabilités
+* API **RESTful**
+* Format d’échange **JSON**
+* Authentification basée sur **JWT (JSON Web Token)**
+* Gestion centralisée des erreurs et exceptions
+* Validation des données entrantes
+* Protection contre les injections SQL via des requêtes préparées
+* Hashage sécurisé des mots de passe
+* Configuration externalisée
+* Code propre, lisible et maintenable
+* Éviter autant que possible les dépendances inutiles
+
+L’architecture devra notamment séparer clairement les responsabilités entre :
+
+* `Model`
+* `Controller`
+* `Repository`
+* `Service`
+* `Core`
+* `Config`
+* `Middleware`
+* `Database`
+* `Routes`
+* `Utils` ou composants transverses si nécessaire
+
+Propose une organisation de projet professionnelle, cohérente avec les bonnes pratiques utilisées dans des projets backend en entreprise.
+
+# 2. Structure du projet
+
+Définis une structure de dossiers claire et évolutive, par exemple :
+
+* `app/`
+
+  * `Controllers/`
+  * `Models/`
+  * `Repositories/`
+  * `Services/`
+  * `Middleware/`
+  * `Core/`
+* `config/`
+* `database/`
+
+  * `migrations/`
+  * `seeds/`
+* `routes/`
+* `public/`
+* `storage/`
+* `vendor/`
+* fichiers de configuration nécessaires
+
+La structure proposée doit permettre d'ajouter facilement de nouveaux modules ou domaines fonctionnels sans dégrader l'architecture existante.
+
+# 3. Base de données
+
+Le backend sera exécuté avec :
+
+* **MySQL**
+* Serveur local : **WampServer**
+* PHP fourni par WampServer
+* Apache comme serveur HTTP
+
+La connexion à la base de données devra être centralisée dans une couche dédiée.
+
+Les informations sensibles telles que :
+
+* hôte
+* port
+* nom de la base
+* utilisateur
+* mot de passe
+* clé secrète JWT
+
+ne doivent pas être codées en dur dans le code source.
+
+Prévoir une configuration basée sur des variables d’environnement ou un mécanisme de configuration facilement adaptable à différents environnements.
+
+# 4. Migrations et Seeds
+
+Le projet doit inclure un mécanisme permettant de gérer :
+
+* les scripts de création des tables ;
+* les contraintes et clés étrangères ;
+* les index nécessaires ;
+* les évolutions du schéma ;
+* les données initiales.
+
+Prévoir notamment :
+
+`database/migrations/`
+
+et
+
+`database/seeds/`
+
+Les scripts doivent pouvoir être exécutés facilement lors de l'installation du projet.
+
+Prévoir également un **utilisateur administrateur initial** via un seed, avec un mot de passe correctement hashé.
+
+# 5. Authentification et sécurité
+
+L'API doit utiliser **JWT** pour sécuriser les endpoints.
+
+Le fonctionnement attendu est le suivant :
+
+### Endpoint public
+
+Seul :
+
+`POST /api/login`
+
+est accessible sans token.
+
+Tous les autres endpoints doivent nécessiter un JWT valide.
+
+Le middleware d'authentification devra :
+
+1. récupérer le token depuis le header HTTP ;
+2. vérifier sa présence ;
+3. vérifier son format ;
+4. vérifier sa signature ;
+5. vérifier son expiration ;
+6. authentifier l'utilisateur ;
+7. transmettre les informations nécessaires au contrôleur.
+
+Utiliser le format HTTP standard :
+
+`Authorization: Bearer <token>`
+
+En cas d'absence ou d'invalidité du token, retourner une réponse JSON appropriée avec le code HTTP correspondant.
+
+Les mots de passe ne doivent **jamais être stockés en clair**.
+
+Utiliser les mécanismes sécurisés de PHP tels que :
+
+`password_hash()`
+
+et
+
+`password_verify()`.
+
+# 6. Format standard des réponses API
+
+Définir un format homogène pour toutes les réponses.
+
+Par exemple :
+
+Succès :
+
+```json
+{
+  "success": true,
+  "message": "Opération effectuée avec succès",
+  "data": {}
+}
+```
+
+Erreur :
+
+```json
+{
+  "success": false,
+  "message": "Une erreur est survenue",
+  "errors": []
+}
+```
+
+Les codes HTTP REST appropriés devront être utilisés :
+
+* `200` : succès
+* `201` : ressource créée
+* `204` : suppression réussie sans contenu
+* `400` : requête invalide
+* `401` : non authentifié
+* `403` : accès interdit
+* `404` : ressource inexistante
+* `422` : erreur de validation
+* `500` : erreur serveur
+
+# 7. Fonctionnalités métier
+
+L'application concerne la **gestion des équipements informatiques d'une ESN**.
+
+L'entreprise met à disposition de ses employés différents équipements :
+
+* ordinateurs ;
+* imprimantes ;
+* téléphones ;
+* écrans ;
+* autres matériels informatiques.
+
+L'objectif est de remplacer le suivi manuel par une application permettant de centraliser et sécuriser la gestion du parc informatique.
+
+Le système devra permettre de :
+
+* gérer les utilisateurs ;
+* gérer les équipements ;
+* gérer les employés ;
+* affecter un équipement à un employé ;
+* enregistrer le retour d'un équipement ;
+* consulter l'historique des affectations ;
+* rechercher rapidement un équipement ;
+* rechercher rapidement un employé ;
+* consulter des statistiques.
+
+# 8. Gestion des utilisateurs
+
+L'administrateur doit pouvoir :
+
+* créer un utilisateur ;
+* modifier un utilisateur ;
+* supprimer un utilisateur ;
+* consulter la liste des utilisateurs ;
+* consulter un utilisateur ;
+* rechercher un utilisateur si nécessaire.
+
+Endpoints RESTful attendus, par exemple :
+
+* `GET /api/users`
+* `GET /api/users/{id}`
+* `POST /api/users`
+* `PUT /api/users/{id}`
+* `DELETE /api/users/{id}`
+
+# 9. Gestion des employés
+
+Fonctionnalités :
+
+* ajouter un employé ;
+* modifier un employé ;
+* supprimer un employé ;
+* consulter les employés ;
+* consulter le détail d'un employé ;
+* rechercher un employé.
+
+Exemples d'endpoints :
+
+* `GET /api/employees`
+* `GET /api/employees/{id}`
+* `POST /api/employees`
+* `PUT /api/employees/{id}`
+* `DELETE /api/employees/{id}`
+* `GET /api/employees/search?q=...`
+
+# 10. Gestion des équipements
+
+Fonctionnalités :
+
+* ajouter un équipement ;
+* modifier un équipement ;
+* supprimer un équipement ;
+* consulter la liste des équipements ;
+* consulter le détail d'un équipement ;
+* rechercher un équipement ;
+* filtrer les équipements si pertinent.
+
+Exemples :
+
+* `GET /api/equipments`
+* `GET /api/equipments/{id}`
+* `POST /api/equipments`
+* `PUT /api/equipments/{id}`
+* `DELETE /api/equipments/{id}`
+* `GET /api/equipments/search?q=...`
+
+# 11. Gestion des affectations
+
+Le système doit permettre :
+
+* d'affecter un équipement à un employé ;
+* d'empêcher l'affectation d'un équipement déjà affecté ;
+* d'enregistrer le retour d'un équipement ;
+* de consulter l'historique des affectations ;
+* de consulter les affectations actives ;
+* de consulter les affectations d'un employé ;
+* de consulter l'historique d'un équipement.
+
+Exemples d'endpoints :
+
+* `GET /api/assignments`
+* `GET /api/assignments/{id}`
+* `POST /api/assignments`
+* `POST /api/assignments/{id}/return`
+* `GET /api/employees/{id}/assignments`
+* `GET /api/equipments/{id}/assignments`
+
+La logique métier liée aux affectations devra être implémentée dans un **Service**, et non directement dans le Controller.
+
+# 12. Tableau de bord
+
+Créer des endpoints permettant de récupérer les statistiques nécessaires au tableau de bord.
+
+Le dashboard devra notamment retourner :
+
+* nombre total d'équipements ;
+* nombre d'équipements disponibles ;
+* nombre d'équipements affectés ;
+* nombre total d'employés.
+
+Exemple :
+
+`GET /api/dashboard/statistics`
+
+La logique de calcul devra être placée dans un `DashboardService` ou un service métier équivalent.
+
+# 13. Modèle de données
+
+Prévoir au minimum les tables suivantes.
+
+### users
+
+* `id`
+* `nom`
+* `prenom`
+* `email`
+* `mot_de_passe`
+
+Prévoir les contraintes appropriées, notamment une contrainte d'unicité sur l'email.
+
+### employees
+
+* `id`
+* `nom`
+* `prenom`
+* `service`
+* `telephone`
+* `email`
+
+### equipments
+
+* `id`
+* `reference`
+* `nom`
+* `categorie`
+* `marque`
+* `date_achat`
+* `etat`
+
+La valeur `etat` devra être normalisée afin de permettre de distinguer clairement, par exemple :
+
+* disponible ;
+* affecté ;
+* en maintenance ;
+* hors service.
+
+### assignments
+
+* `id`
+* `employe_id`
+* `equipement_id`
+* `date_affectation`
+* `date_retour`
+
+Définir correctement les relations entre :
+
+* `users`
+* `employees`
+* `equipments`
+* `assignments`
+
+et mettre en place les clés étrangères, index et contraintes d'intégrité nécessaires.
+
+# 14. Gestion des erreurs
+
+Mettre en place une gestion centralisée des exceptions.
+
+Les erreurs techniques ne doivent pas être directement exposées au client en production.
+
+Prévoir notamment la gestion de :
+
+* erreurs SQL ;
+* ressources inexistantes ;
+* erreurs de validation ;
+* erreurs d'authentification ;
+* erreurs JWT ;
+* erreurs métier ;
+* erreurs inattendues.
+
+Les réponses doivent toujours rester au format JSON.
+
+# 15. Validation
+
+Chaque endpoint permettant de créer ou modifier une ressource devra valider les données reçues.
+
+Exemples :
+
+* champs obligatoires ;
+* format email ;
+* unicité de l'email ;
+* format des dates ;
+* existence des identifiants référencés ;
+* cohérence des états ;
+* impossibilité d'affecter un équipement déjà affecté.
+
+La validation doit être placée dans une couche appropriée et ne doit pas être entièrement implémentée dans les Controllers.
+
+# 16. Pagination, recherche et filtrage
+
+Pour les ressources susceptibles de contenir beaucoup de données, prévoir une pagination.
+
+Exemple :
+
+`GET /api/equipments?page=1&limit=10`
+
+Retourner idéalement les métadonnées :
+
+```json
+{
+  "success": true,
+  "data": [],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 100,
+    "totalPages": 10
+  }
+}
+```
+
+Prévoir également des mécanismes de recherche et de filtrage adaptés.
+
+# 17. Routes
+
+Centraliser les routes de l'application.
+
+Éviter de mélanger la définition des routes avec la logique métier.
+
+La structure pourrait être organisée par domaine :
+
+* routes d'authentification ;
+* routes utilisateurs ;
+* routes employés ;
+* routes équipements ;
+* routes affectations ;
+* routes dashboard.
+
+# 18. Qualité du code
+
+Le code doit respecter les principes suivants :
+
+* Single Responsibility Principle ;
+* Open/Closed Principle ;
+* Liskov Substitution Principle ;
+* Interface Segregation Principle ;
+* Dependency Inversion Principle.
+
+Éviter :
+
+* les Controllers contenant toute la logique métier ;
+* les requêtes SQL directement dans les Controllers ;
+* les classes trop volumineuses ;
+* les dépendances circulaires ;
+* le code dupliqué ;
+* les variables globales ;
+* les secrets dans le code source.
+
+Favoriser :
+
+* l'injection de dépendances ;
+* les interfaces lorsque pertinent ;
+* les services métier ;
+* les repositories ;
+* les composants réutilisables ;
+* une gestion centralisée des réponses HTTP ;
+* une gestion centralisée des exceptions.
+
+# 19. Déploiement WampServer
+
+Le projet doit être conçu pour être facilement déployable sur **WampServer**.
+
+Fournir :
+
+1. la structure complète du projet ;
+2. les fichiers de configuration nécessaires ;
+3. la configuration Apache nécessaire ;
+4. les règles `.htaccess` si nécessaires ;
+5. les instructions de configuration MySQL ;
+6. les instructions d'exécution des migrations ;
+7. les instructions d'exécution des seeds ;
+8. les instructions de configuration de la clé JWT ;
+9. les instructions de lancement de l'API ;
+10. un fichier de documentation `README.md`.
+
+L'installation doit être suffisamment simple pour qu'un développeur puisse cloner/copier le projet, configurer la base de données et démarrer l'API rapidement.
+
+# 20. Documentation API
+
+Documenter tous les endpoints avec :
+
+* méthode HTTP ;
+* URL ;
+* authentification requise ;
+* paramètres ;
+* body JSON attendu ;
+* réponse JSON ;
+* codes HTTP possibles ;
+* exemples de requêtes ;
+* exemples de réponses.
+
+Si pertinent, proposer une documentation compatible avec **OpenAPI/Swagger**.
+
+# 21. Livrables attendus
+
+Je souhaite que tu conçoives la solution comme un **projet backend professionnel prêt à être développé et maintenu en entreprise**.
+
+Présente ta réponse dans l'ordre suivant :
+
+1. **Architecture globale**
+2. **Justification des choix architecturaux**
+3. **Arborescence complète du projet**
+4. **Modèle de données et relations**
+5. **Scripts SQL de migrations**
+6. **Scripts SQL de seeds**
+7. **Configuration de la base de données**
+8. **Système JWT**
+9. **Middleware d'authentification**
+10. **Structure des routes**
+11. **Models**
+12. **Repositories**
+13. **Services**
+14. **Controllers**
+15. **Gestion centralisée des erreurs**
+16. **Validation**
+17. **Pagination, recherche et filtrage**
+18. **Endpoints REST détaillés**
+19. **Configuration Apache/WampServer**
+20. **Procédure d'installation et de déploiement**
+21. **README**
+22. **Recommandations de sécurité et d'amélioration**
+
+Lorsque tu fournis du code, donne du **code complet, cohérent et directement exploitable**, et assure-toi que les différentes classes et couches sont compatibles entre elles.
+
+L'objectif n'est pas simplement de produire une API fonctionnelle, mais de mettre en place une **architecture PHP RESTful professionnelle, sécurisée, testable, maintenable et évolutive**, respectant les standards d'un projet développé par un **Software Architect / Senior Backend Engineer expérimenté**.
