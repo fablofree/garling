@@ -52,6 +52,19 @@
             </div>
         </div>
 
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label class="form-label">BRN (Business Registration No.)</label>
+                <input type="text" name="brn" class="form-control"
+                       value="<?= htmlspecialchars($c['brn'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="form-group">
+                <label class="form-label">VAT Number</label>
+                <input type="text" name="vat_number" class="form-control"
+                       value="<?= htmlspecialchars($c['vat_number'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+        </div>
+
         <div class="form-group">
             <label class="form-label">Notes</label>
             <textarea name="notes" class="form-control" rows="2"><?= htmlspecialchars($c['notes'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>

@@ -60,15 +60,11 @@ class InvoiceService
         $totalLabour = 0.0;
 
         foreach ($spareParts as $part) {
-            $qty   = (float)($part['quantity'] ?? 1);
-            $price = (float)($part['unit_price'] ?? 0);
-            $totalParts += $qty * $price;
+            $totalParts += (float)($part['amount'] ?? 0);
         }
 
         foreach ($repairs as $repair) {
-            $qty   = (float)($repair['quantity'] ?? 1);
-            $price = (float)($repair['unit_price'] ?? 0);
-            $totalLabour += $qty * $price;
+            $totalLabour += (float)($repair['amount'] ?? 0);
         }
 
         $subtotal  = $totalParts + $totalLabour - $discountAmount;

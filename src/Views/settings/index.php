@@ -9,22 +9,54 @@ $s = $settings ?? [];
     <h1 class="page-title">App Settings</h1>
 </div>
 
-<!-- Text settings -->
-<div class="card mb-4" style="max-width:600px">
+<!-- General settings -->
+<div class="card mb-4" style="max-width:700px">
     <div class="card-header"><h2 class="card-title">General Settings</h2></div>
     <form method="POST" action="/settings/update">
         <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($_csrf_token ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
-        <div class="form-group" style="padding:20px 20px 0">
-            <label class="form-label">App Name</label>
-            <input type="text" name="app_name" class="form-control"
-                   value="<?= htmlspecialchars($s['app_name'] ?? 'Garage A. Lingiah', ENT_QUOTES, 'UTF-8') ?>">
+        <div class="form-grid-2" style="padding:20px 20px 0">
+            <div class="form-group">
+                <label class="form-label">App Name</label>
+                <input type="text" name="app_name" class="form-control"
+                       value="<?= htmlspecialchars($s['app_name'] ?? 'Garage A. Lingiah', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Currency Symbol</label>
+                <input type="text" name="currency_symbol" class="form-control"
+                       value="<?= htmlspecialchars($s['currency_symbol'] ?? 'Rs', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+        </div>
+
+        <div class="form-grid-2" style="padding:0 20px">
+            <div class="form-group">
+                <label class="form-label">BRN (Business Registration No.)</label>
+                <input type="text" name="app_brn" class="form-control"
+                       value="<?= htmlspecialchars($s['app_brn'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="form-group">
+                <label class="form-label">VAT Registration No.</label>
+                <input type="text" name="app_vat_reg" class="form-control"
+                       value="<?= htmlspecialchars($s['app_vat_reg'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
         </div>
 
         <div class="form-group" style="padding:0 20px">
-            <label class="form-label">Currency Symbol</label>
-            <input type="text" name="currency_symbol" class="form-control" style="max-width:120px"
-                   value="<?= htmlspecialchars($s['currency_symbol'] ?? 'Rs', ENT_QUOTES, 'UTF-8') ?>">
+            <label class="form-label">Address</label>
+            <textarea name="app_address" class="form-control" rows="2"><?= htmlspecialchars($s['app_address'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+        </div>
+
+        <div class="form-grid-2" style="padding:0 20px">
+            <div class="form-group">
+                <label class="form-label">Telephone</label>
+                <input type="text" name="app_tel" class="form-control"
+                       value="<?= htmlspecialchars($s['app_tel'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="app_email" class="form-control"
+                       value="<?= htmlspecialchars($s['app_email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            </div>
         </div>
 
         <div class="form-group" style="padding:0 20px">
@@ -41,7 +73,7 @@ $s = $settings ?? [];
 </div>
 
 <!-- Logo upload -->
-<div class="card" style="max-width:600px">
+<div class="card" style="max-width:700px">
     <div class="card-header"><h2 class="card-title">App Logo</h2></div>
     <div style="padding:20px">
         <div style="margin-bottom:16px">

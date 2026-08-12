@@ -18,8 +18,7 @@ class Database
         $config = require ROOT_PATH . '/config/database.php';
 
         $dsn = sprintf(
-            '%s:host=%s;port=%s;dbname=%s;options=--client_encoding=UTF8',
-            $config['driver'],
+            'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
             $config['host'],
             $config['port'],
             $config['database']

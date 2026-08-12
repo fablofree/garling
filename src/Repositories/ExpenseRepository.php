@@ -19,8 +19,8 @@ class ExpenseRepository extends BaseRepository
     {
         return $this->db->fetchAll(
             "SELECT * FROM expenses
-             WHERE EXTRACT(YEAR FROM expense_date) = :year
-               AND EXTRACT(MONTH FROM expense_date) = :month
+             WHERE YEAR(expense_date) = :year
+               AND MONTH(expense_date) = :month
              ORDER BY expense_date DESC",
             ['year' => $year, 'month' => $month]
         );
@@ -30,8 +30,8 @@ class ExpenseRepository extends BaseRepository
     {
         $row = $this->db->fetchOne(
             "SELECT COALESCE(SUM(amount), 0) AS total FROM expenses
-             WHERE EXTRACT(YEAR FROM expense_date) = :year
-               AND EXTRACT(MONTH FROM expense_date) = :month",
+             WHERE YEAR(expense_date) = :year
+               AND MONTH(expense_date) = :month",
             ['year' => $year, 'month' => $month]
         );
         return (float)($row['total'] ?? 0);
@@ -42,8 +42,8 @@ class ExpenseRepository extends BaseRepository
         return $this->db->fetchAll(
             "SELECT category, COALESCE(SUM(amount), 0) AS total
              FROM expenses
-             WHERE EXTRACT(YEAR FROM expense_date) = :year
-               AND EXTRACT(MONTH FROM expense_date) = :month
+             WHERE YEAR(expense_date) = :year
+               AND MONTH(expense_date) = :month
              GROUP BY category
              ORDER BY total DESC",
             ['year' => $year, 'month' => $month]

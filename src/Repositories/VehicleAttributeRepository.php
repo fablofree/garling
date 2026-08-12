@@ -24,11 +24,12 @@ class VehicleAttributeRepository
 
     public function createMake(string $name): array
     {
-        $stmt = $this->db->query(
-            "INSERT INTO vehicle_makes (name, created_at) VALUES (:name, NOW()) RETURNING *",
+        $this->db->execute(
+            "INSERT INTO vehicle_makes (name, created_at) VALUES (:name, NOW())",
             ['name' => $name]
         );
-        return $stmt->fetch() ?: [];
+        $id = (int)$this->db->lastInsertId();
+        return $this->db->fetchOne("SELECT * FROM vehicle_makes WHERE id = :id", ['id' => $id]) ?: [];
     }
 
     public function updateMake(int $id, string $name): void
@@ -68,11 +69,12 @@ class VehicleAttributeRepository
 
     public function createModel(string $name, ?int $makeId): array
     {
-        $stmt = $this->db->query(
-            "INSERT INTO vehicle_models (name, make_id, created_at) VALUES (:name, :make_id, NOW()) RETURNING *",
+        $this->db->execute(
+            "INSERT INTO vehicle_models (name, make_id, created_at) VALUES (:name, :make_id, NOW())",
             ['name' => $name, 'make_id' => $makeId]
         );
-        return $stmt->fetch() ?: [];
+        $id = (int)$this->db->lastInsertId();
+        return $this->db->fetchOne("SELECT * FROM vehicle_models WHERE id = :id", ['id' => $id]) ?: [];
     }
 
     public function updateModel(int $id, string $name, ?int $makeId): void
@@ -97,11 +99,12 @@ class VehicleAttributeRepository
 
     public function createType(string $name): array
     {
-        $stmt = $this->db->query(
-            "INSERT INTO vehicle_types (name, created_at) VALUES (:name, NOW()) RETURNING *",
+        $this->db->execute(
+            "INSERT INTO vehicle_types (name, created_at) VALUES (:name, NOW())",
             ['name' => $name]
         );
-        return $stmt->fetch() ?: [];
+        $id = (int)$this->db->lastInsertId();
+        return $this->db->fetchOne("SELECT * FROM vehicle_types WHERE id = :id", ['id' => $id]) ?: [];
     }
 
     public function updateType(int $id, string $name): void
@@ -126,11 +129,12 @@ class VehicleAttributeRepository
 
     public function createColour(string $name): array
     {
-        $stmt = $this->db->query(
-            "INSERT INTO vehicle_colours (name, created_at) VALUES (:name, NOW()) RETURNING *",
+        $this->db->execute(
+            "INSERT INTO vehicle_colours (name, created_at) VALUES (:name, NOW())",
             ['name' => $name]
         );
-        return $stmt->fetch() ?: [];
+        $id = (int)$this->db->lastInsertId();
+        return $this->db->fetchOne("SELECT * FROM vehicle_colours WHERE id = :id", ['id' => $id]) ?: [];
     }
 
     public function updateColour(int $id, string $name): void

@@ -44,7 +44,9 @@ $invNo  = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
             <div class="form-group">
                 <label class="form-label required">Payment Date</label>
                 <input type="date" name="payment_date" class="form-control"
-                       value="<?= date('Y-m-d') ?>" required>
+                       value="<?= date('Y-m-d') ?>"
+                       max="<?= date('Y-m-d') ?>"
+                       required>
             </div>
             <div class="form-group">
                 <label class="form-label required">Payment Method</label>

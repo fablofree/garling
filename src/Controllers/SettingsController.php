@@ -41,7 +41,16 @@ class SettingsController extends Controller
         $this->requireAdmin();
         $this->validateCsrf();
 
-        $fields = ['app_name', 'currency_symbol', 'vat_default'];
+        $fields = [
+            'app_name',
+            'currency_symbol',
+            'vat_default',
+            'app_brn',
+            'app_vat_reg',
+            'app_address',
+            'app_tel',
+            'app_email',
+        ];
         foreach ($fields as $key) {
             $value = trim($request->post($key, ''));
             $this->settingsRepo->set($key, $value);

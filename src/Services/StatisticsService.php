@@ -22,40 +22,27 @@ class StatisticsService
 
     public function getDashboardStats(): array
     {
-        $now   = new \DateTimeImmutable();
-        $year  = (int)$now->format('Y');
-        $month = (int)$now->format('n');
-
-        $monthlyRevenue  = $this->serviceRepo->getMonthlyRevenue($year, $month);
-        $monthlyExpenses = $this->expenseRepo->getMonthlyTotal($year, $month);
         $outstandingDebt = $this->customerRepo->getTotalOutstandingDebt();
         $totalCustomers  = $this->customerRepo->countAll();
         $totalVehicles   = $this->vehicleRepo->countAll();
         $recentEntries   = $this->serviceRepo->getRecentEntries(8);
         $unpaidInvoices  = $this->serviceRepo->getUnpaidInvoices();
         $debtors         = $this->customerRepo->findWithDebt();
-        $dailyRevenue    = $this->paymentRepo->getDailyRevenue($now->format('Y-m-d'));
-        $weeklyRevenue   = $this->paymentRepo->getWeeklyRevenue();
 
         return [
             'total_customers'   => $totalCustomers,
             'total_vehicles'    => $totalVehicles,
-            'monthly_revenue'   => $monthlyRevenue,
-            'monthly_expenses'  => $monthlyExpenses,
-            'monthly_profit'    => $monthlyRevenue - $monthlyExpenses,
             'outstanding_debt'  => $outstandingDebt,
-            'daily_revenue'     => $dailyRevenue,
-            'weekly_revenue'    => $weeklyRevenue,
             'recent_entries'    => $recentEntries,
             'unpaid_invoices'   => $unpaidInvoices,
             'debtors'           => $debtors,
-            'current_month'     => $now->format('F Y'),
+            'current_month'     => (new \DateTimeImmutable())->format('F Y'),
         ];
     }
 
     public function getReportData(int $year, int $month): array
     {
-        $monthlyRevenue  = $this->serviceRepo->getMonthlyRevenue($year, $month);
+        $monthlyRevenue  = $this->getMonthlyRevenue($year, $month);
         $monthlyExpenses = $this->expenseRepo->getMonthlyTotal($year, $month);
         $expenseBreakdown = $this->expenseRepo->getTotalByCategory($year, $month);
         $debtors         = $this->customerRepo->findWithDebt();
@@ -74,5 +61,24 @@ class StatisticsService
             'outstanding_debt'  => $outstandingDebt,
             'debtors'           => $debtors,
         ];
+    }
+
+    /**
+     * Revenue collected (payments received) for a given month — MySQL compatible.
+     */
+    private function getMonthlyRevenue(int $year, int $month): float
+    {
+        // Use paymentRepo via DB directly
+        $db  = \App\Core\Database::getInstance();
+        $row = $db->fetchOne(
+            "SELECT COALESCE(SUM(p.amount), 0) AS revenue
+             FROM payments p
+             JOIN service_entries se ON se.id = p.service_entry_id
+             WHERE YEAR(p.payment_date) = :year
+               AND MONTH(p.payment_date) = :month
+               AND se.is_quotation = 0",
+            ['year' => $year, 'month' => $month]
+        );
+        return (float)($row['revenue'] ?? 0);
     }
 }

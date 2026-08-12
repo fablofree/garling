@@ -33,6 +33,8 @@ class ServiceEntryRepository extends BaseRepository
         $row = $this->db->fetchOne(
             "SELECT se.*,
                 c.name AS customer_name,
+                c.brn AS customer_brn,
+                c.vat_number AS customer_vat_number,
                 v.registration_no,
                 v.make AS vehicle_make,
                 v.model AS vehicle_model,
@@ -142,14 +144,12 @@ class ServiceEntryRepository extends BaseRepository
     public function insertSparePart(int $serviceEntryId, array $part, int $sortOrder): void
     {
         $this->db->execute(
-            "INSERT INTO spare_parts (service_entry_id, description, quantity, unit_price, total_price, sort_order)
-             VALUES (:service_entry_id, :description, :quantity, :unit_price, :total_price, :sort_order)",
+            "INSERT INTO spare_parts (service_entry_id, description, amount, sort_order)
+             VALUES (:service_entry_id, :description, :amount, :sort_order)",
             [
                 'service_entry_id' => $serviceEntryId,
                 'description'      => $part['description'],
-                'quantity'         => $part['quantity'],
-                'unit_price'       => $part['unit_price'],
-                'total_price'      => $part['total_price'],
+                'amount'           => $part['amount'],
                 'sort_order'       => $sortOrder,
             ]
         );
@@ -158,14 +158,12 @@ class ServiceEntryRepository extends BaseRepository
     public function insertRepair(int $serviceEntryId, array $repair, int $sortOrder): void
     {
         $this->db->execute(
-            "INSERT INTO repairs (service_entry_id, description, quantity, unit_price, total_price, sort_order)
-             VALUES (:service_entry_id, :description, :quantity, :unit_price, :total_price, :sort_order)",
+            "INSERT INTO repairs (service_entry_id, description, amount, sort_order)
+             VALUES (:service_entry_id, :description, :amount, :sort_order)",
             [
                 'service_entry_id' => $serviceEntryId,
                 'description'      => $repair['description'],
-                'quantity'         => $repair['quantity'],
-                'unit_price'       => $repair['unit_price'],
-                'total_price'      => $repair['total_price'],
+                'amount'           => $repair['amount'],
                 'sort_order'       => $sortOrder,
             ]
         );
@@ -207,32 +205,17 @@ class ServiceEntryRepository extends BaseRepository
                  SELECT service_entry_id, SUM(amount) as total_paid
                  FROM payments GROUP BY service_entry_id
              ) p ON p.service_entry_id = se.id
-             WHERE se.is_quotation = FALSE
+             WHERE se.is_quotation = 0
                AND se.total_cost > COALESCE(p.total_paid, 0)
              ORDER BY se.entry_date ASC"
         );
     }
 
-    public function getMonthlyRevenue(int $year, int $month): float
-    {
-        $row = $this->db->fetchOne(
-            "SELECT COALESCE(SUM(amount), 0) AS revenue
-             FROM payments p
-             JOIN service_entries se ON se.id = p.service_entry_id
-             WHERE EXTRACT(YEAR FROM p.payment_date) = :year
-               AND EXTRACT(MONTH FROM p.payment_date) = :month
-               AND se.is_quotation = FALSE",
-            ['year' => $year, 'month' => $month]
-        );
-        return (float)($row['revenue'] ?? 0);
-    }
-
     public function getMonthlyStats(int $months = 12): array
     {
-        $interval = $months . ' months';
         return $this->db->fetchAll(
             "SELECT
-                TO_CHAR(se.entry_date, 'YYYY-MM') AS month,
+                DATE_FORMAT(se.entry_date, '%Y-%m') AS month,
                 COUNT(se.id) AS entry_count,
                 COALESCE(SUM(se.total_cost), 0) AS total_invoiced,
                 COALESCE(SUM(p.paid), 0) AS total_collected
@@ -241,9 +224,9 @@ class ServiceEntryRepository extends BaseRepository
                  SELECT service_entry_id, SUM(amount) as paid
                  FROM payments GROUP BY service_entry_id
              ) p ON p.service_entry_id = se.id
-             WHERE se.is_quotation = FALSE
-               AND se.entry_date >= CURRENT_DATE - INTERVAL '" . $months . " months'
-             GROUP BY TO_CHAR(se.entry_date, 'YYYY-MM')
+             WHERE se.is_quotation = 0
+               AND se.entry_date >= DATE_SUB(CURDATE(), INTERVAL " . (int)$months . " MONTH)
+             GROUP BY DATE_FORMAT(se.entry_date, '%Y-%m')
              ORDER BY month DESC"
         );
     }

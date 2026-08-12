@@ -20,7 +20,7 @@ class CustomerRepository extends BaseRepository
         $q = '%' . $query . '%';
         return $this->db->fetchAll(
             "SELECT * FROM customers
-             WHERE name ILIKE :q OR email ILIKE :q OR tel_mobile ILIKE :q OR tel_home ILIKE :q
+             WHERE name LIKE :q OR email LIKE :q OR tel_mobile LIKE :q OR tel_home LIKE :q
              ORDER BY name ASC",
             ['q' => $q]
         );
@@ -43,7 +43,7 @@ class CustomerRepository extends BaseRepository
                 COALESCE(SUM(p.paid), 0) AS total_paid,
                 COALESCE(SUM(se.total_cost), 0) - COALESCE(SUM(p.paid), 0) AS balance
              FROM customers c
-             LEFT JOIN service_entries se ON se.customer_id = c.id AND se.is_quotation = FALSE
+             LEFT JOIN service_entries se ON se.customer_id = c.id AND se.is_quotation = 0
              LEFT JOIN (
                  SELECT service_entry_id, SUM(amount) as paid
                  FROM payments GROUP BY service_entry_id
@@ -64,7 +64,7 @@ class CustomerRepository extends BaseRepository
                  SELECT service_entry_id, SUM(amount) as paid
                  FROM payments GROUP BY service_entry_id
              ) p ON p.service_entry_id = se.id
-             WHERE se.is_quotation = FALSE"
+             WHERE se.is_quotation = 0"
         );
         return (float)($row['total_balance'] ?? 0);
     }

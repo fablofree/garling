@@ -45,7 +45,7 @@ class VehicleRepository extends BaseRepository
             "SELECT v.*, c.name AS customer_name
              FROM vehicles v
              LEFT JOIN customers c ON c.id = v.customer_id
-             WHERE v.registration_no ILIKE :q OR v.make ILIKE :q OR v.model ILIKE :q OR v.chassis_no ILIKE :q
+             WHERE v.registration_no LIKE :q OR v.make LIKE :q OR v.model LIKE :q OR v.chassis_no LIKE :q
              ORDER BY v.registration_no ASC",
             ['q' => $q]
         );

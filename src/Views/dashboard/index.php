@@ -33,42 +33,12 @@ $fmtInt  = fn(float $v) => number_format($v, 0);
     </div>
 
     <div class="stat-card">
-        <div class="stat-icon stat-icon-green">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <div class="stat-body">
-            <div class="stat-value"><?= $fmt((float)($s['monthly_revenue'] ?? 0)) ?></div>
-            <div class="stat-label">Monthly Revenue</div>
-        </div>
-    </div>
-
-    <div class="stat-card">
         <div class="stat-icon stat-icon-red">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
         <div class="stat-body">
             <div class="stat-value"><?= $fmt((float)($s['outstanding_debt'] ?? 0)) ?></div>
             <div class="stat-label">Outstanding Balance</div>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon stat-icon-orange">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="stat-body">
-            <div class="stat-value"><?= $fmt((float)($s['daily_revenue'] ?? 0)) ?></div>
-            <div class="stat-label">Today's Revenue</div>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon stat-icon-teal">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="stat-body">
-            <div class="stat-value"><?= $fmt((float)($s['weekly_revenue'] ?? 0)) ?></div>
-            <div class="stat-label">Weekly Revenue</div>
         </div>
     </div>
 </div>

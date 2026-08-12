@@ -157,6 +157,8 @@ class CustomerController extends Controller
             'tel_mobile' => trim($request->post('tel_mobile', '')),
             'fax'        => trim($request->post('fax', '')),
             'email'      => trim($request->post('email', '')),
+            'brn'        => trim($request->post('brn', '')),
+            'vat_number' => trim($request->post('vat_number', '')),
             'notes'      => trim($request->post('notes', '')),
         ];
     }

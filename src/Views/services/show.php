@@ -12,9 +12,9 @@ $invoiceNo = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
 <div class="page-header">
     <h1 class="page-title"><?= htmlspecialchars($invoiceNo, ENT_QUOTES, 'UTF-8') ?></h1>
     <div class="action-group">
-        <a href="/services/<?= (int)($e['id'] ?? 0) ?>/invoice" class="btn btn-outline" target="_blank">🖨 Print Invoice</a>
-        <?php if ($bal > 0): ?>
-        <a href="/services/<?= (int)($e['id'] ?? 0) ?>/payments/create" class="btn btn-primary">💳 Record Payment</a>
+        <a href="/services/<?= (int)($e['id'] ?? 0) ?>/invoice" class="btn btn-outline" target="_blank">Print <?= $e['is_quotation'] == 1 ? 'Quotation' : 'Invoice' ?></a>
+        <?php if ($bal > 0 && $e['is_quotation'] != 1): ?>
+        <a href="/services/<?= (int)($e['id'] ?? 0) ?>/payments/create" class="btn btn-primary">Record Payment</a>
         <?php endif; ?>
         <a href="/services/<?= (int)($e['id'] ?? 0) ?>/edit" class="btn btn-outline">Edit</a>
         <form method="POST" action="/services/<?= (int)($e['id'] ?? 0) ?>/delete" class="inline" onsubmit="return confirm('Delete this entry?')">
@@ -61,7 +61,9 @@ $invoiceNo = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
             <div class="detail-row"><span class="detail-label">Customer</span><span><a href="/customers/<?= (int)($e['customer_id'] ?? 0) ?>" class="link"><?= htmlspecialchars($e['customer_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></a></span></div>
             <div class="detail-row"><span class="detail-label">Vehicle</span><span><a href="/vehicles/<?= (int)($e['vehicle_id'] ?? 0) ?>" class="link"><?= htmlspecialchars($e['registration_no'] ?? '', ENT_QUOTES, 'UTF-8') ?></a> <?= htmlspecialchars(trim(($e['vehicle_make'] ?? '') . ' ' . ($e['vehicle_model'] ?? '')), ENT_QUOTES, 'UTF-8') ?></span></div>
             <div class="detail-row"><span class="detail-label">Odometer</span><span><?= $e['odometer'] ? number_format((int)$e['odometer']) . ' ' . ($e['distance_unit'] ?? 'km') : '—' ?></span></div>
+            <?php if ($e['is_quotation'] != 1): ?>
             <div class="detail-row"><span class="detail-label">Next Service</span><span><?= $e['next_servicing'] ? number_format((int)$e['next_servicing']) . ' ' . ($e['distance_unit'] ?? 'km') : '—' ?></span></div>
+            <?php endif; ?>
             <div class="detail-row"><span class="detail-label">Type</span><span><span class="badge badge-<?= strtolower($e['entry_type'] ?? '') ?>"><?= htmlspecialchars($e['entry_type'] ?? '', ENT_QUOTES, 'UTF-8') ?></span></span></div>
             <div class="detail-row"><span class="detail-label">Delivery Date</span><span><?= htmlspecialchars($e['delivery_date'] ?? '—', ENT_QUOTES, 'UTF-8') ?></span></div>
             <?php if (!empty($e['remarks'])): ?>
@@ -90,14 +92,12 @@ $invoiceNo = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
     <div class="card-header"><h2 class="card-title">Spare Parts</h2></div>
     <div class="table-responsive">
         <table class="table">
-            <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+            <thead><tr><th>Description</th><th>Amount</th></tr></thead>
             <tbody>
             <?php foreach ($spare_parts as $p): ?>
             <tr>
                 <td><?= htmlspecialchars($p['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= htmlspecialchars((string)($p['quantity'] ?? 1), ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= $fmt((float)($p['unit_price'] ?? 0)) ?></td>
-                <td><?= $fmt((float)($p['total_price'] ?? 0)) ?></td>
+                <td><?= $fmt((float)($p['amount'] ?? 0)) ?></td>
             </tr>
             <?php endforeach; ?>
             </tbody>
@@ -112,14 +112,12 @@ $invoiceNo = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
     <div class="card-header"><h2 class="card-title">Repairs / Labour</h2></div>
     <div class="table-responsive">
         <table class="table">
-            <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+            <thead><tr><th>Description</th><th>Amount</th></tr></thead>
             <tbody>
             <?php foreach ($repairs as $r): ?>
             <tr>
                 <td><?= htmlspecialchars($r['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= htmlspecialchars((string)($r['quantity'] ?? 1), ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= $fmt((float)($r['unit_price'] ?? 0)) ?></td>
-                <td><?= $fmt((float)($r['total_price'] ?? 0)) ?></td>
+                <td><?= $fmt((float)($r['amount'] ?? 0)) ?></td>
             </tr>
             <?php endforeach; ?>
             </tbody>
@@ -132,7 +130,7 @@ $invoiceNo = 'INV-' . str_pad((string)($e['id'] ?? ''), 6, '0', STR_PAD_LEFT);
 <div class="card mt-4">
     <div class="card-header">
         <h2 class="card-title">Payments (<?= count($payments ?? []) ?>)</h2>
-        <?php if ($bal > 0): ?>
+        <?php if ($bal > 0 && $e['is_quotation'] != 1): ?>
         <a href="/services/<?= (int)($e['id'] ?? 0) ?>/payments/create" class="btn btn-sm btn-primary">+ Record Payment</a>
         <?php endif; ?>
     </div>

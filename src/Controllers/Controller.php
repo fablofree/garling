@@ -54,9 +54,19 @@ abstract class Controller
                 : '/assets/images/logo.svg';
             $data['_app']['currency']['symbol'] = $dbSettings['currency_symbol'] ?? $data['_app']['currency']['symbol'];
             $data['_app']['vat_default']        = $dbSettings['vat_default']     ?? '0';
+            $data['_app']['brn']                = $dbSettings['app_brn']         ?? '';
+            $data['_app']['vat_reg']            = $dbSettings['app_vat_reg']     ?? '';
+            $data['_app']['address']            = $dbSettings['app_address']     ?? '';
+            $data['_app']['tel']                = $dbSettings['app_tel']         ?? '';
+            $data['_app']['email']              = $dbSettings['app_email']       ?? '';
         } catch (\Throwable $e) {
             $data['_app']['logo_url']    = '/assets/images/logo.svg';
             $data['_app']['vat_default'] = '0';
+            $data['_app']['brn']         = '';
+            $data['_app']['vat_reg']     = '';
+            $data['_app']['address']     = '';
+            $data['_app']['tel']         = '';
+            $data['_app']['email']       = '';
         }
 
         $viewPath = ROOT_PATH . '/src/Views/' . str_replace('.', '/', $view) . '.php';
@@ -85,6 +95,29 @@ abstract class Controller
         $config = require ROOT_PATH . '/config/app.php';
         $data['_app']        = $config;
         $data['_csrf_token'] = Session::getCsrfToken();
+
+        // Load app settings for raw views (invoices/quotations need company info)
+        try {
+            $settingsRepo = new \App\Repositories\SettingsRepository();
+            $dbSettings   = $settingsRepo->getAll();
+            $data['_app']['name']               = $dbSettings['app_name']        ?? $data['_app']['name'];
+            $data['_app']['logo_url']           = !empty($dbSettings['app_logo'])
+                ? '/' . ltrim($dbSettings['app_logo'], '/')
+                : '/assets/images/logo.svg';
+            $data['_app']['currency']['symbol'] = $dbSettings['currency_symbol'] ?? $data['_app']['currency']['symbol'];
+            $data['_app']['brn']                = $dbSettings['app_brn']         ?? '';
+            $data['_app']['vat_reg']            = $dbSettings['app_vat_reg']     ?? '';
+            $data['_app']['address']            = $dbSettings['app_address']     ?? '';
+            $data['_app']['tel']                = $dbSettings['app_tel']         ?? '';
+            $data['_app']['email']              = $dbSettings['app_email']       ?? '';
+        } catch (\Throwable $e) {
+            $data['_app']['logo_url'] = '/assets/images/logo.svg';
+            $data['_app']['brn']      = '';
+            $data['_app']['vat_reg']  = '';
+            $data['_app']['address']  = '';
+            $data['_app']['tel']      = '';
+            $data['_app']['email']    = '';
+        }
 
         $viewPath = ROOT_PATH . '/src/Views/' . str_replace('.', '/', $view) . '.php';
         if (!file_exists($viewPath)) {

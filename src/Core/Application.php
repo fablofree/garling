@@ -17,6 +17,7 @@ use App\Controllers\VehicleAttributeController;
 use App\Controllers\CatalogController;
 use App\Controllers\UserController;
 use App\Controllers\ProfileController;
+use App\Controllers\InvoicesController;
 
 class Application
 {
@@ -92,6 +93,9 @@ class Application
         $r->get('/expenses/{id}/edit',     [ExpenseController::class, 'edit'],   'expenses.edit');
         $r->post('/expenses/{id}/update',  [ExpenseController::class, 'update'], 'expenses.update');
         $r->post('/expenses/{id}/delete',  [ExpenseController::class, 'delete'], 'expenses.delete');
+
+        // Invoices list
+        $r->get('/invoices', [InvoicesController::class, 'index'], 'invoices.index');
 
         // Reports
         $r->get('/reports', [ReportController::class, 'index'], 'reports.index');

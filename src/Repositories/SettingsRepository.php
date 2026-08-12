@@ -20,7 +20,7 @@ class SettingsRepository
      */
     public function getAll(): array
     {
-        $rows   = $this->db->fetchAll("SELECT key, value FROM app_settings ORDER BY key");
+        $rows   = $this->db->fetchAll("SELECT `key`, `value` FROM app_settings ORDER BY `key`");
         $result = [];
         foreach ($rows as $row) {
             $result[$row['key']] = (string)($row['value'] ?? '');
@@ -34,7 +34,7 @@ class SettingsRepository
     public function get(string $key, string $default = ''): string
     {
         $row = $this->db->fetchOne(
-            "SELECT value FROM app_settings WHERE key = :key",
+            "SELECT `value` FROM app_settings WHERE `key` = :key",
             ['key' => $key]
         );
         return $row ? (string)($row['value'] ?? $default) : $default;
@@ -46,10 +46,9 @@ class SettingsRepository
     public function set(string $key, string $value): void
     {
         $this->db->execute(
-            "INSERT INTO app_settings (key, value, updated_at)
+            "INSERT INTO app_settings (`key`, `value`, updated_at)
              VALUES (:key, :value, NOW())
-             ON CONFLICT (key) DO UPDATE
-             SET value = EXCLUDED.value, updated_at = NOW()",
+             ON DUPLICATE KEY UPDATE `value` = VALUES(`value`), updated_at = NOW()",
             ['key' => $key, 'value' => $value]
         );
     }

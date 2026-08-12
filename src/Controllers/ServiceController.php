@@ -34,7 +34,6 @@ class ServiceController extends Controller
 
         $search   = trim($request->get('search', ''));
         $type     = $request->get('type', '');
-        $status   = $request->get('status', '');
 
         $entries = $this->serviceRepo->findAll();
 
@@ -270,27 +269,57 @@ class ServiceController extends Controller
     public function invoice(Request $request, Response $response): void
     {
         $this->requireAuth();
-
-        $id = (int)$request->param('id');
-
-        $invoiceService = new InvoiceService(
-            $this->serviceRepo,
-            new PaymentRepository(),
-            $this->customerRepo,
-            $this->vehicleRepo,
-        );
-
-        $data = $invoiceService->buildInvoiceData($id);
-
-        if (!$data) {
-            Session::flash('error', 'Service entry not found.');
+        $id    = (int)$request->param('id');
+        $entry = $this->serviceRepo->findById($id);
+        if (!$entry) {
+            Session::flash('error', 'Entry not found.');
             $this->redirect('/services');
         }
 
-        $this->renderRaw('services.invoice', array_merge($data, [
-            'title'      => 'Invoice #' . $data['invoice_number'],
-            'activeMenu' => 'services',
-        ]));
+        $spareParts  = $this->serviceRepo->getSpareParts($id);
+        $repairs     = $this->serviceRepo->getRepairs($id);
+        $paymentRepo = new PaymentRepository();
+        $payments    = $paymentRepo->findByServiceEntryId($id);
+        $totalPaid   = array_sum(array_column($payments, 'amount'));
+        $balance     = (float)$entry['total_cost'] - $totalPaid;
+
+        if ($entry['is_quotation'] == 1) {
+            // Quotation: get or create formal quotation record
+            $quoRepo   = new \App\Repositories\QuotationRepository();
+            $quotation = $quoRepo->findByServiceEntryId($id);
+            if (!$quotation) {
+                $quotation = $quoRepo->createForEntry($id);
+            }
+
+            $this->renderRaw('services.quotation', [
+                'entry'             => $entry,
+                'quotation'         => $quotation,
+                'spare_parts'       => $spareParts,
+                'repairs'           => $repairs,
+                'total_paid'        => $totalPaid,
+                'balance'           => $balance,
+                'quotation_number'  => $quotation['quotation_number'],
+            ]);
+            return;
+        }
+
+        // Invoice: get or create formal invoice record
+        $invRepo = new \App\Repositories\InvoiceRepository();
+        $invoice = $invRepo->findByServiceEntryId($id);
+        if (!$invoice) {
+            $invoice = $invRepo->createForEntry($id);
+        }
+
+        $this->renderRaw('services.invoice', [
+            'entry'          => $entry,
+            'invoice'        => $invoice,
+            'spare_parts'    => $spareParts,
+            'repairs'        => $repairs,
+            'payments'       => $payments,
+            'total_paid'     => $totalPaid,
+            'balance'        => $balance,
+            'invoice_number' => $invoice['invoice_number'],
+        ]);
     }
 
     private function extractEntryData(Request $request): array
@@ -307,8 +336,8 @@ class ServiceController extends Controller
             'next_servicing'  => $request->post('next_servicing') !== '' ? (int)$request->post('next_servicing') : null,
             'remarks'         => trim($request->post('remarks', '')),
             'entry_type'      => $entryType,
-            'is_quotation'    => $isQuotation ? 't' : 'f',
-            'is_completed'    => $isCompleted ? 't' : 'f',
+            'is_quotation'    => $isQuotation ? 1 : 0,
+            'is_completed'    => $isCompleted ? 1 : 0,
             'delivery_date'   => $request->post('delivery_date') ?: null,
             'vat_percent'     => (float)$request->post('vat_percent', 0),
             'discount_amount' => (float)$request->post('discount_amount', 0),
@@ -333,29 +362,17 @@ class ServiceController extends Controller
     private function parseLineItems(Request $request, string $prefix): array
     {
         $descriptions = $request->post($prefix . '_description', []);
-        $quantities   = $request->post($prefix . '_quantity', []);
-        $unitPrices   = $request->post($prefix . '_unit_price', []);
-
-        if (!is_array($descriptions)) {
-            return [];
-        }
-
+        $amounts      = $request->post($prefix . '_amount', []);
+        if (!is_array($descriptions)) return [];
         $items = [];
         foreach ($descriptions as $i => $desc) {
             $desc = trim($desc);
-            if ($desc === '') {
-                continue;
-            }
-            $qty   = (float)($quantities[$i] ?? 1);
-            $price = (float)($unitPrices[$i] ?? 0);
+            if ($desc === '') continue;
             $items[] = [
                 'description' => $desc,
-                'quantity'    => $qty,
-                'unit_price'  => $price,
-                'total_price' => round($qty * $price, 2),
+                'amount'      => round((float)($amounts[$i] ?? 0), 2),
             ];
         }
-
         return $items;
     }
 }

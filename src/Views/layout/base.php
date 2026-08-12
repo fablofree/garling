@@ -19,6 +19,7 @@ $flashWarning = $_flash_warning ?? null;
     <link rel="icon" type="image/svg+xml" href="/assets/images/logo.svg">
     <meta name="csrf-token" content="<?= htmlspecialchars($_csrf_token ?? '', ENT_QUOTES, 'UTF-8') ?>">
     <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -87,5 +88,21 @@ $flashWarning = $_flash_warning ?? null;
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <script src="/assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+    // Initialize all date inputs with Flatpickr (dd/mm/YYYY display, YYYY-MM-DD value)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[type="date"]').forEach(function(el) {
+            var maxAttr = el.getAttribute('max');
+            flatpickr(el, {
+                dateFormat: 'Y-m-d',      // value stored as YYYY-MM-DD (PHP reads this)
+                altInput: true,
+                altFormat: 'd/m/Y',       // display to user as dd/mm/YYYY
+                allowInput: true,
+                maxDate: maxAttr || null,
+            });
+        });
+    });
+    </script>
 </body>
 </html>

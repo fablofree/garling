@@ -136,7 +136,7 @@ class CatalogRepository
     }
 
     /**
-     * ILIKE search on item name (case-insensitive, PostgreSQL).
+     * LIKE search on item name (case-insensitive via MySQL default collation).
      */
     public function searchItems(string $q): array
     {
@@ -144,7 +144,7 @@ class CatalogRepository
             "SELECT ci.id, ci.name, ci.unit_price, pc.name AS category_name
              FROM catalog_items ci
              JOIN part_categories pc ON pc.id = ci.category_id
-             WHERE ci.name ILIKE :q OR ci.description ILIKE :q2
+             WHERE ci.name LIKE :q OR ci.description LIKE :q2
              ORDER BY ci.name
              LIMIT 30",
             ['q' => '%' . $q . '%', 'q2' => '%' . $q . '%']

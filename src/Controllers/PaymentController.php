@@ -66,6 +66,12 @@ class PaymentController extends Controller
             $this->redirect('/services/' . $serviceId . '/payments/create');
         }
 
+        $paymentDate = $request->post('payment_date', date('Y-m-d'));
+        if (!empty($paymentDate) && $paymentDate > date('Y-m-d')) {
+            Session::flash('error', 'Payment date cannot be in the future.');
+            $this->redirect('/services/' . $serviceId . '/payments/create');
+        }
+
         $totalPaid = $this->paymentRepo->getTotalPaidForEntry($serviceId);
         $balance   = (float)$entry['total_cost'] - $totalPaid;
 
@@ -75,7 +81,7 @@ class PaymentController extends Controller
 
         $data = [
             'service_entry_id' => $serviceId,
-            'payment_date'     => $request->post('payment_date', date('Y-m-d')),
+            'payment_date'     => $paymentDate,
             'amount'           => $amount,
             'payment_method'   => $request->post('payment_method', 'CASH'),
             'cheque_number'    => trim($request->post('cheque_number', '')),

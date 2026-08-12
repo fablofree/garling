@@ -43,7 +43,7 @@ class PaymentRepository extends BaseRepository
             "SELECT COALESCE(SUM(p.amount), 0) as revenue
              FROM payments p
              JOIN service_entries se ON se.id = p.service_entry_id
-             WHERE p.payment_date = :date AND se.is_quotation = FALSE",
+             WHERE p.payment_date = :date AND se.is_quotation = 0",
             ['date' => $date]
         );
         return (float)($row['revenue'] ?? 0);
@@ -55,8 +55,8 @@ class PaymentRepository extends BaseRepository
             "SELECT COALESCE(SUM(p.amount), 0) as revenue
              FROM payments p
              JOIN service_entries se ON se.id = p.service_entry_id
-             WHERE p.payment_date >= CURRENT_DATE - INTERVAL '7 days'
-               AND se.is_quotation = FALSE"
+             WHERE p.payment_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+               AND se.is_quotation = 0"
         );
         return (float)($row['revenue'] ?? 0);
     }

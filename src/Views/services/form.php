@@ -4,6 +4,8 @@ $isEdit     = !empty($e);
 $selVehicle = (int)($e['vehicle_id'] ?? $preselect_vehicle ?? 0);
 $selCust    = (int)($e['customer_id'] ?? $preselect_customer ?? 0);
 $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 'UTF-8');
+$isQuot     = isset($e['is_quotation']) && $e['is_quotation'] == 1;
+$isComp     = isset($e['is_completed']) && $e['is_completed'] == 1;
 ?>
 <div class="page-header">
     <h1 class="page-title"><?= htmlspecialchars($title ?? '', ENT_QUOTES, 'UTF-8') ?></h1>
@@ -16,7 +18,7 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
     <!-- Header info -->
     <div class="card mb-4">
         <div class="card-header"><h2 class="card-title">Entry Details</h2></div>
-        <div class="form-grid-3">
+        <div class="form-grid-2">
             <div class="form-group">
                 <label class="form-label required">Entry Date</label>
                 <input type="date" name="entry_date" class="form-control"
@@ -26,22 +28,6 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
                 <label class="form-label">Delivery Date</label>
                 <input type="date" name="delivery_date" class="form-control"
                        value="<?= htmlspecialchars($e['delivery_date'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Type</label>
-                <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="is_quotation" value="1"
-                               <?= !empty($e['is_quotation']) && $e['is_quotation'] !== 'f' ? 'checked' : '' ?>
-                               id="isQuotation">
-                        Quotation (not Invoice)
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="is_completed" value="1"
-                               <?= !empty($e['is_completed']) && $e['is_completed'] !== 'f' ? 'checked' : '' ?>>
-                        Completed
-                    </label>
-                </div>
             </div>
         </div>
 
@@ -82,7 +68,7 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
                 <input type="number" name="odometer" class="form-control" id="odoInput" min="0" step="1"
                        value="<?= htmlspecialchars((string)($e['odometer'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
             </div>
-            <div class="form-group">
+            <div class="form-group" id="nextServicingGroup" style="display:<?= $isQuot ? 'none' : 'block' ?>">
                 <label class="form-label">Next Servicing At</label>
                 <input type="number" name="next_servicing" class="form-control" id="nextServInput" min="0" step="1"
                        value="<?= htmlspecialchars((string)($e['next_servicing'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
@@ -105,23 +91,20 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
             <table class="table line-items-table" id="partsTable">
                 <thead>
                     <tr>
-                        <th style="width:48%">Description</th>
-                        <th style="width:13%">Qty</th>
-                        <th style="width:19%">Unit Price</th>
-                        <th style="width:14%">Total</th>
+                        <th style="width:75%">Description</th>
+                        <th style="width:20%">Amount</th>
                         <th style="width:40px"></th>
-                        <th style="width:32px"></th>
                     </tr>
                 </thead>
                 <tbody id="partsBody">
                 <?php
                 $partsData = $spare_parts ?? [];
                 if (empty($partsData)) {
-                    $partsData = [['description' => '', 'quantity' => 1, 'unit_price' => '', 'total_price' => '']];
+                    $partsData = [['description' => '', 'amount' => '']];
                 }
                 foreach ($partsData as $p):
                 ?>
-                <tr class="line-item-row" style="position:relative">
+                <tr class="line-item-row">
                     <td style="position:relative">
                         <div style="display:flex;gap:4px;align-items:center">
                             <input type="text" name="parts_description[]" class="form-control desc-input"
@@ -134,17 +117,12 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
                         </div>
                         <div class="catalog-popup" style="display:none"></div>
                     </td>
-                    <td><input type="number" name="parts_quantity[]" class="form-control qty-input"
-                               value="<?= htmlspecialchars((string)($p['quantity'] ?? 1), ENT_QUOTES, 'UTF-8') ?>"
-                               min="0" step="0.01"></td>
-                    <td><input type="number" name="parts_unit_price[]" class="form-control price-input"
-                               value="<?= htmlspecialchars((string)($p['unit_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               min="0" step="0.01" placeholder="0.00"></td>
-                    <td><input type="text" class="form-control line-total"
-                               value="<?= htmlspecialchars(number_format((float)($p['total_price'] ?? 0), 2), ENT_QUOTES, 'UTF-8') ?>"
-                               readonly tabindex="-1"></td>
+                    <td>
+                        <input type="number" name="parts_amount[]" class="form-control amount-input"
+                               value="<?= htmlspecialchars((string)($p['amount'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                               min="0" step="0.01" placeholder="0.00">
+                    </td>
                     <td><button type="button" class="btn btn-xs btn-danger remove-row">×</button></td>
-                    <td></td>
                 </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -163,10 +141,8 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
             <table class="table line-items-table" id="repairsTable">
                 <thead>
                     <tr>
-                        <th style="width:50%">Description</th>
-                        <th style="width:15%">Qty</th>
-                        <th style="width:20%">Unit Price</th>
-                        <th style="width:15%">Total</th>
+                        <th style="width:75%">Description</th>
+                        <th style="width:20%">Amount</th>
                         <th style="width:40px"></th>
                     </tr>
                 </thead>
@@ -174,23 +150,28 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
                 <?php
                 $repairsData = $repairs ?? [];
                 if (empty($repairsData)) {
-                    $repairsData = [['description' => '', 'quantity' => 1, 'unit_price' => '', 'total_price' => '']];
+                    $repairsData = [['description' => '', 'amount' => '']];
                 }
                 foreach ($repairsData as $r):
                 ?>
                 <tr class="line-item-row">
-                    <td><input type="text" name="repairs_description[]" class="form-control"
-                               value="<?= htmlspecialchars($r['description'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                               placeholder="Description"></td>
-                    <td><input type="number" name="repairs_quantity[]" class="form-control qty-input"
-                               value="<?= htmlspecialchars((string)($r['quantity'] ?? 1), ENT_QUOTES, 'UTF-8') ?>"
-                               min="0" step="0.01"></td>
-                    <td><input type="number" name="repairs_unit_price[]" class="form-control price-input"
-                               value="<?= htmlspecialchars((string)($r['unit_price'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               min="0" step="0.01" placeholder="0.00"></td>
-                    <td><input type="text" class="form-control line-total"
-                               value="<?= htmlspecialchars(number_format((float)($r['total_price'] ?? 0), 2), ENT_QUOTES, 'UTF-8') ?>"
-                               readonly tabindex="-1"></td>
+                    <td style="position:relative">
+                        <div style="display:flex;gap:4px;align-items:center">
+                            <input type="text" name="repairs_description[]" class="form-control desc-input"
+                                   value="<?= htmlspecialchars($r['description'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                   placeholder="Description" autocomplete="off">
+                            <button type="button" class="btn btn-xs btn-outline catalog-pick-btn" title="Search catalog"
+                                    style="flex-shrink:0;padding:4px 7px">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                        </div>
+                        <div class="catalog-popup" style="display:none"></div>
+                    </td>
+                    <td>
+                        <input type="number" name="repairs_amount[]" class="form-control amount-input"
+                               value="<?= htmlspecialchars((string)($r['amount'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                               min="0" step="0.01" placeholder="0.00">
+                    </td>
                     <td><button type="button" class="btn btn-xs btn-danger remove-row">×</button></td>
                 </tr>
                 <?php endforeach; ?>
@@ -216,6 +197,23 @@ $currSymbol = htmlspecialchars($_app['currency']['symbol'] ?? 'Rs', ENT_QUOTES, 
                     <input type="number" name="vat_percent" id="vatInput" class="form-control"
                            value="<?= htmlspecialchars((string)($e['vat_percent'] ?? $default_vat ?? 0), ENT_QUOTES, 'UTF-8') ?>"
                            min="0" step="0.01">
+                </div>
+            </div>
+
+            <div class="form-group" style="padding:0 4px 12px">
+                <label class="form-label">Type</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_quotation" value="1"
+                               <?= $isQuot ? 'checked' : '' ?>
+                               id="isQuotation">
+                        Quotation (not Invoice)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_completed" value="1"
+                               <?= $isComp ? 'checked' : '' ?>>
+                        Completed
+                    </label>
                 </div>
             </div>
 
@@ -257,13 +255,11 @@ function calcNextServicing() {
 document.getElementById('odoInput').addEventListener('blur', calcNextServicing);
 
 document.getElementById('vehicleSelect').addEventListener('change', function() {
-    // Sync customer
     var opt    = this.options[this.selectedIndex];
     var custId = opt.getAttribute('data-customer-id');
     if (custId) {
         document.getElementById('customerSelect').value = custId;
     }
-    // Recalc next servicing if odometer already set
     var odo  = parseInt(document.getElementById('odoInput').value, 10);
     var freq = parseInt(opt.getAttribute('data-freq') || '0', 10);
     if (!isNaN(odo) && freq > 0) {
@@ -283,22 +279,19 @@ document.getElementById('customerSelect').addEventListener('change', function() 
     vs.value = '';
 });
 
-// ── Line items calculation ──────────────────────────────────────────
-function calcRow(row) {
-    var qty   = parseFloat(row.querySelector('.qty-input')?.value) || 0;
-    var price = parseFloat(row.querySelector('.price-input')?.value) || 0;
-    var total = qty * price;
-    var totalEl = row.querySelector('.line-total');
-    if (totalEl) totalEl.value = total.toFixed(2);
-    return total;
-}
+// Toggle next servicing group when quotation checkbox changes
+document.getElementById('isQuotation').addEventListener('change', function() {
+    var grp = document.getElementById('nextServicingGroup');
+    if (grp) grp.style.display = this.checked ? 'none' : 'block';
+});
 
+// ── Line items calculation ──────────────────────────────────────────
 function recalcAll() {
     var partsTotal  = 0;
     var labourTotal = 0;
 
-    document.querySelectorAll('#partsBody .line-item-row').forEach(function(r) { partsTotal += calcRow(r); });
-    document.querySelectorAll('#repairsBody .line-item-row').forEach(function(r) { labourTotal += calcRow(r); });
+    document.querySelectorAll('#partsBody .amount-input').forEach(function(i) { partsTotal += parseFloat(i.value) || 0; });
+    document.querySelectorAll('#repairsBody .amount-input').forEach(function(i) { labourTotal += parseFloat(i.value) || 0; });
 
     var discount  = parseFloat(document.getElementById('discountInput')?.value) || 0;
     var vatPct    = parseFloat(document.getElementById('vatInput')?.value) || 0;
@@ -316,46 +309,45 @@ function recalcAll() {
     document.getElementById('summaryTotal').textContent    = CURR + ' ' + total.toFixed(2);
 }
 
-function makePartsRow() {
+function makeRow(prefix, bodyId) {
     var tr = document.createElement('tr');
     tr.className = 'line-item-row';
-    tr.style.position = 'relative';
     tr.innerHTML =
         '<td style="position:relative">' +
             '<div style="display:flex;gap:4px;align-items:center">' +
-                '<input type="text" name="parts_description[]" class="form-control desc-input" placeholder="Description" autocomplete="off">' +
+                '<input type="text" name="' + prefix + '_description[]" class="form-control desc-input" placeholder="Description" autocomplete="off">' +
                 '<button type="button" class="btn btn-xs btn-outline catalog-pick-btn" title="Search catalog" style="flex-shrink:0;padding:4px 7px">' +
                     '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
                 '</button>' +
             '</div>' +
             '<div class="catalog-popup" style="display:none"></div>' +
         '</td>' +
-        '<td><input type="number" name="parts_quantity[]" class="form-control qty-input" value="1" min="0" step="0.01"></td>' +
-        '<td><input type="number" name="parts_unit_price[]" class="form-control price-input" min="0" step="0.01" placeholder="0.00"></td>' +
-        '<td><input type="text" class="form-control line-total" value="0.00" readonly tabindex="-1"></td>' +
-        '<td><button type="button" class="btn btn-xs btn-danger remove-row">×</button></td>' +
-        '<td></td>';
-    return tr;
-}
-
-function makeRepairRow() {
-    var tr = document.createElement('tr');
-    tr.className = 'line-item-row';
-    tr.innerHTML =
-        '<td><input type="text" name="repairs_description[]" class="form-control" placeholder="Description"></td>' +
-        '<td><input type="number" name="repairs_quantity[]" class="form-control qty-input" value="1" min="0" step="0.01"></td>' +
-        '<td><input type="number" name="repairs_unit_price[]" class="form-control price-input" min="0" step="0.01" placeholder="0.00"></td>' +
-        '<td><input type="text" class="form-control line-total" value="0.00" readonly tabindex="-1"></td>' +
+        '<td><input type="number" name="' + prefix + '_amount[]" class="form-control amount-input" min="0" step="0.01" placeholder="0.00"></td>' +
         '<td><button type="button" class="btn btn-xs btn-danger remove-row">×</button></td>';
     return tr;
 }
 
 document.getElementById('addPartBtn').addEventListener('click', function() {
-    document.getElementById('partsBody').appendChild(makePartsRow());
+    document.getElementById('partsBody').appendChild(makeRow('parts', 'partsBody'));
 });
 document.getElementById('addRepairBtn').addEventListener('click', function() {
-    document.getElementById('repairsBody').appendChild(makeRepairRow());
+    document.getElementById('repairsBody').appendChild(makeRow('repairs', 'repairsBody'));
 });
+
+// Auto-add row when amount input in last row gets focus
+function setupAutoAddRow(bodyId, prefix) {
+    var tbody = document.getElementById(bodyId);
+    tbody.addEventListener('focus', function(e) {
+        if (!e.target.classList.contains('amount-input')) return;
+        var rows = tbody.querySelectorAll('tr.line-item-row');
+        var lastRow = rows[rows.length - 1];
+        if (lastRow && lastRow.contains(e.target)) {
+            tbody.appendChild(makeRow(prefix, bodyId));
+        }
+    }, true);
+}
+setupAutoAddRow('partsBody', 'parts');
+setupAutoAddRow('repairsBody', 'repairs');
 
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('remove-row')) {
@@ -366,19 +358,16 @@ document.addEventListener('click', function(e) {
             recalcAll();
         } else {
             row.querySelectorAll('input').forEach(function(inp) { if (!inp.readOnly) inp.value = ''; });
-            var lt = row.querySelector('.line-total');
-            if (lt) lt.value = '0.00';
             recalcAll();
         }
     }
-    // Close any open catalog popups when clicking elsewhere
     if (!e.target.closest('.catalog-pick-btn') && !e.target.closest('.catalog-popup')) {
         document.querySelectorAll('.catalog-popup').forEach(function(p) { p.style.display = 'none'; });
     }
 });
 
 document.addEventListener('input', function(e) {
-    if (e.target.classList.contains('qty-input') || e.target.classList.contains('price-input')
+    if (e.target.classList.contains('amount-input')
         || e.target.id === 'discountInput' || e.target.id === 'vatInput') {
         recalcAll();
     }
@@ -394,16 +383,11 @@ document.addEventListener('click', function(e) {
     var popup   = td.querySelector('.catalog-popup');
     var descInp = td.querySelector('.desc-input');
 
-    // Close all other popups
     document.querySelectorAll('.catalog-popup').forEach(function(p) {
         if (p !== popup) p.style.display = 'none';
     });
 
     if (popup.style.display === 'none') {
-        popup.innerHTML = '<div style="padding:10px;color:var(--text-muted);font-size:13px">Type to search catalog…</div>';
-        popup.style.display = 'block';
-
-        // Put a search input at the top
         popup.innerHTML = '<div style="padding:8px">' +
             '<input type="text" class="form-control" id="catalogSearchInp" placeholder="Search parts…" style="font-size:13px" autocomplete="off">' +
             '</div><div id="catalogResults"></div>';
@@ -414,6 +398,7 @@ document.addEventListener('click', function(e) {
             clearTimeout(catalogDebounce);
             catalogDebounce = setTimeout(function() { runCatalogSearch(si.value, popup, descInp, btn); }, 280);
         });
+        popup.style.display = 'block';
     } else {
         popup.style.display = 'none';
     }
@@ -439,10 +424,9 @@ function runCatalogSearch(q, popup, descInp, btn) {
                     '<div class="item-meta">' + escHtml(item.category_name) + ' — ' + CURR + ' ' + parseFloat(item.unit_price).toFixed(2) + '</div>';
                 div.addEventListener('click', function() {
                     descInp.value = item.name;
-                    // Find the price input in the same row
                     var row = btn.closest('tr');
-                    var pi  = row.querySelector('.price-input');
-                    if (pi) { pi.value = parseFloat(item.unit_price).toFixed(2); }
+                    var ai  = row.querySelector('.amount-input');
+                    if (ai) { ai.value = parseFloat(item.unit_price).toFixed(2); }
                     popup.style.display = 'none';
                     recalcAll();
                 });
