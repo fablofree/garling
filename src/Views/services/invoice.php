@@ -221,8 +221,16 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
         </div>
     </div>
 
-    <!-- Totals box -->
-    <div class="totals-box">
+    <!-- Totals box (remarks left, totals right) -->
+    <div class="totals-box" style="align-items:flex-start;">
+        <?php if (!empty($e['remarks'])): ?>
+        <div style="flex:1;padding-right:24px;">
+            <p style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:6px;">Remarks</p>
+            <p style="color:#555;line-height:1.6"><?= nl2br(htmlspecialchars($e['remarks'], ENT_QUOTES, 'UTF-8')) ?></p>
+        </div>
+        <?php else: ?>
+        <div style="flex:1;"></div>
+        <?php endif; ?>
         <div class="totals-inner">
             <div class="total-line"><span>Parts Total</span><span><?= $fmt((float)($e['total_parts'] ?? 0)) ?></span></div>
             <div class="total-line"><span>Labour Total</span><span><?= $fmt((float)($e['total_labour'] ?? 0)) ?></span></div>
@@ -268,14 +276,6 @@ $logoUrl    = htmlspecialchars($cfg['logo_url'] ?? '/assets/images/logo.svg', EN
     <!-- <div class="next-service">
         Next Service at: <strong><?= number_format((int)$e['next_servicing']) . ' ' . ($e['distance_unit'] ?? 'km') ?></strong>
     </div> -->
-    <?php endif; ?>
-
-    <!-- Remarks -->
-    <?php if (!empty($e['remarks'])): ?>
-    <div style="margin-bottom:20px;">
-        <p style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:6px;">Remarks</p>
-        <p style="color:#555;line-height:1.6"><?= nl2br(htmlspecialchars($e['remarks'], ENT_QUOTES, 'UTF-8')) ?></p>
-    </div>
     <?php endif; ?>
 
     <!-- Signatures -->

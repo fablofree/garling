@@ -246,7 +246,7 @@ function calcNextServicing() {
     var freq = parseInt(opt.getAttribute('data-freq') || '0', 10);
     if (freq > 0) {
         var nextEl = document.getElementById('nextServInput');
-        if (nextEl && !nextEl.value) {
+        if (nextEl) {
             nextEl.value = odo + freq;
         }
     }
